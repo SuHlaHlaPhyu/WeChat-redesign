@@ -43,6 +43,7 @@ class _DiscoverFragmentState extends State<DiscoverFragment> {
         builder: (context, moments, child) => Scaffold(
           backgroundColor: BACKGROUND_COLOR,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: PRIMARY_COLOR,
             elevation: 0.0,
             actions: [

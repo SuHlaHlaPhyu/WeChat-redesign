@@ -1,6 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wechat_redesign/pages/start_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 
@@ -35,26 +36,36 @@ class LogoutSectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 20.0),
-        height: 40,
-        width: 160,
-        decoration: BoxDecoration(
-          color: BACKGROUND_WHITE_COLOR,
-          borderRadius: BorderRadius.circular(
-            18.0,
+      child: GestureDetector(
+        onTap: (){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const StartPage(),
+            ),
+          );
+        },
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 20.0),
+          height: 40,
+          width: 160,
+          decoration: BoxDecoration(
+            color: BACKGROUND_WHITE_COLOR,
+            borderRadius: BorderRadius.circular(
+              18.0,
+            ),
+            border: Border.all(
+              color: DIVIDER_COLOR,
+            ),
           ),
-          border: Border.all(
-            color: DIVIDER_COLOR,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            "Log Out",
-            style: GoogleFonts.poppins(
-              textStyle: const TextStyle(
-                color: LOGOUT_TEXT_COLOR,
-                fontSize: MARGIN_MEDIUM_2,
+          child: Center(
+            child: Text(
+              "Log Out",
+              style: GoogleFonts.poppins(
+                textStyle: const TextStyle(
+                  color: LOGOUT_TEXT_COLOR,
+                  fontSize: MARGIN_MEDIUM_2,
+                ),
               ),
             ),
           ),
