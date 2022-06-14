@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
+import 'package:wechat_redesign/data/vos/user_vo.dart';
 
 
 abstract class DataAgent {
@@ -10,4 +11,7 @@ abstract class DataAgent {
   Stream<MomentVO> getMomentById(int momentId);
   Future<String> uploadFileToFirebase(File image);
   Future<void> editPost(MomentVO newsFeed);
+
+  /// auth
+  Future registerNewUser(UserVO newUser);
 }

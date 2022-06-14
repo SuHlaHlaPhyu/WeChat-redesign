@@ -34,3 +34,4 @@ const LOGIN_COLOR = Color.fromRGBO(25, 25, 25, 1);
 const AUTH_BACKGROUND_COLOR = Color.fromRGBO(25, 25, 25, 1);
 const CAMERA_BACKGROUND_COLOR = Color.fromRGBO(221, 221, 221, 1);
 const CROSS_ICON_COLOR =  Color.fromRGBO(229, 229, 229, 1);
+const BOTTOM_SHEET_COLOR =  Color.fromRGBO(44, 44, 44, 1);

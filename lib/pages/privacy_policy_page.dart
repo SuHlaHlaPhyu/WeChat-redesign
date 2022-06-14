@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/pages/email_verify_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 
 import '../resources/dimens.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
-  const PrivacyPolicyPage({Key? key}) : super(key: key);
+  final UserVO? userVO;
+  final File? imageFile;
+  const PrivacyPolicyPage({Key? key,required this.userVO,required this.imageFile}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +109,10 @@ class PrivacyPolicyPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const EmailVerifyPage(),
+                    builder: (context) => EmailVerifyPage(
+                      userVO: userVO,
+                      imageFile: imageFile,
+                    ),
                   ),
                 );
               },

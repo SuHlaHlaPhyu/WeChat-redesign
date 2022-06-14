@@ -1,14 +1,21 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
+import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/network/data_agent.dart';
 
 const newsFeedCollection = "moments";
 const fileUploadRef = "uploads";
+const usersCollection = "users";
+
 class DataAgentImpl extends DataAgent{
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
+
+  /// Auth
+  FirebaseAuth auth = FirebaseAuth.instance;
   @override
   Stream<List<MomentVO>> getMoments() {
     return fireStore
@@ -66,4 +73,23 @@ class DataAgentImpl extends DataAgent{
     throw UnimplementedError();
   }
 
+  @override
+  Future registerNewUser(UserVO newUser) {
+    return auth
+        .createUserWithEmailAndPassword(
+        email: newUser.email ?? "", password: newUser.password ?? "")
+        .then((credential) =>
+    credential.user?..updateDisplayName(newUser.name))
+        .then((user) {
+      newUser.qrCode = user?.uid ?? "";
+      _addNewUser(newUser);
+    });
+  }
+
+  Future<void> _addNewUser(UserVO newUser) {
+    return fireStore
+        .collection(usersCollection)
+        .doc(newUser.qrCode.toString())
+        .set(newUser.toJson());
+  }
 }

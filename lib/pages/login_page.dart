@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wechat_redesign/pages/main_page.dart';
-import 'package:wechat_redesign/pages/sign_up_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 class LoginPage extends StatelessWidget {
