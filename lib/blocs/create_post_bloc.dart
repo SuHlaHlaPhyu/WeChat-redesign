@@ -7,6 +7,7 @@ import 'package:video_player/video_player.dart';
 import 'package:wechat_redesign/data/models/data_model.dart';
 import 'package:wechat_redesign/data/models/data_model_impl.dart';
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
+import 'package:wechat_redesign/data/vos/user_vo.dart';
 
 class CreatePostBloc extends ChangeNotifier {
   PlatformFile? chosenFile;
@@ -20,6 +21,7 @@ class CreatePostBloc extends ChangeNotifier {
   bool isVideoFile = false;
   String? postedFile;
   MomentVO? moment;
+  UserVO? loginUser;
 
   bool isLoading = false;
   bool isEditMode = false;
@@ -28,6 +30,8 @@ class CreatePostBloc extends ChangeNotifier {
 
   final DataModel _model = DataModelImpl();
   CreatePostBloc({int? id}) {
+    loginUser = _model.getLogInUser();
+    notifyListeners();
     if (id != null) {
       isEditMode = true;
       isRemove = true;
@@ -45,8 +49,6 @@ class CreatePostBloc extends ChangeNotifier {
       postedFile = newsFeedItem.postFile ?? "";
       isVideoFile = newsFeedItem.isVideo ?? false;
       moment = newsFeedItem;
-      print(
-          "postedFile $postedFile \n isEditMode $isEditMode \n isVideo $isVideoFile \n chosenFile $chosenFile ");
       _notifySafely();
     });
   }
@@ -67,9 +69,9 @@ class CreatePostBloc extends ChangeNotifier {
   }
 
   void prepareDataForNewPostMode() {
-    userName = "Su Hla Phyu";
+    userName = loginUser?.name;
     profilePicture =
-        "https://bestprofilepictures.com/wp-content/uploads/2021/08/Anime-Girl-Profile-Picture.jpg";
+        loginUser?.profile;
     _notifySafely();
   }
 
@@ -80,7 +82,7 @@ class CreatePostBloc extends ChangeNotifier {
     _notifySafely();
   }
 
-  void setFlag(){
+  void setFlag() {
     down = !down;
     _notifySafely();
   }

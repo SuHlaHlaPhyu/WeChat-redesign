@@ -1,7 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wechat_redesign/pages/chatting_page.dart';
+import 'package:wechat_redesign/pages/chatting/chatting_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 
@@ -257,7 +257,9 @@ class WechatSectionView extends StatelessWidget {
                 height: 75,
               ),
             ),
-            const ProfileImageView(),
+            const ProfileImageView(
+              profile: "https://i.pinimg.com/736x/75/8f/57/758f57fe8f91f684be6059b632bee2c0.jpg",
+            ),
             const SizedBox(
               width: MARGIN_MEDIUM,
             ),

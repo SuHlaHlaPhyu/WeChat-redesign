@@ -1,9 +1,12 @@
-import 'package:alphabet_list_scroll_view/alphabet_list_scroll_view.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wechat_redesign/blocs/contacts_bloc.dart';
+import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
+import 'package:wechat_redesign/viewitems/loading_view.dart';
 
 import '../viewitems/profile_image_view.dart';
 
@@ -12,98 +15,113 @@ class ContactsFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: BACKGROUND_WHITE_COLOR,
-      appBar: AppBar(
-        elevation: 0.0,
-        title: Text(
-          "Contacts",
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              color: APP_TITLE_COLOR,
-              fontSize: TEXT_REGULAR_2XX,
+    return ChangeNotifierProvider(
+      create: (context) => ContactsBloc(),
+      child: Selector<ContactsBloc, bool>(
+        selector: (context, bloc) => bloc.isLoading,
+        builder: (context, isLoading, child) => Scaffold(
+          backgroundColor: BACKGROUND_WHITE_COLOR,
+          appBar: AppBar(
+            elevation: 0.0,
+            title: Text(
+              "Contacts",
+              style: GoogleFonts.poppins(
+                textStyle: const TextStyle(
+                  color: APP_TITLE_COLOR,
+                  fontSize: TEXT_REGULAR_2XX,
+                ),
+              ),
+            ),
+            backgroundColor: PRIMARY_COLOR,
+            actions: const [
+              Padding(
+                padding: EdgeInsets.only(
+                  right: 10.0,
+                ),
+                child: Icon(
+                  Icons.person_add_alt,
+                  size: 28.0,
+                  color: ADD_ICON_COLOR,
+                ),
+              ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SearchSectionView(),
+                const Divider(
+                  thickness: 1,
+                  color: BACKGROUND_COLOR,
+                ),
+                const CategorySectionView(),
+                const DividerSectionView(),
+                const ContactsListSectionView(),
+                Visibility(
+                  visible: isLoading,
+                  child: Container(
+                    color: Colors.black12,
+                    child: const Center(
+                      child: LoadingView(),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        backgroundColor: PRIMARY_COLOR,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(
-              right: 10.0,
-            ),
-            child: Icon(
-              Icons.person_add_alt,
-              size: 28.0,
-              color: ADD_ICON_COLOR,
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: const [
-            SearchSectionView(),
-            Divider(
-              thickness: 1,
-              color: BACKGROUND_COLOR,
-            ),
-            CategorySectionView(),
-            DividerSectionView(),
-            ContactsListSectionView(),
-          ],
         ),
       ),
     );
   }
 }
 
-class ContactsListSectionView extends StatefulWidget {
+class ContactsListSectionView extends StatelessWidget {
   const ContactsListSectionView({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<ContactsListSectionView> createState() => _ContactsListSectionViewState();
-}
-
-class _ContactsListSectionViewState extends State<ContactsListSectionView> {
-
-  TextEditingController searchController = TextEditingController();
-  List<String> strList = ["#","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
-  List<Widget> favouriteList = [];
-  @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return const ContactItem();
-      },
-      separatorBuilder: (context, index) {
-        return const Divider();
-      },
-      itemCount: 7,
+    return Consumer<ContactsBloc>(
+      builder: (context, bloc, child) => ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return ContactItem(
+            contact: bloc.contactsList?[index],
+          );
+        },
+        separatorBuilder: (context, index) {
+          return const Divider();
+        },
+        itemCount: bloc.contactsList?.length ?? 0,
+      ),
     );
   }
 }
 
 class ContactItem extends StatelessWidget {
-  const ContactItem({
-    Key? key,
-  }) : super(key: key);
+  final UserVO? contact;
+  const ContactItem({Key? key, required this.contact}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: MARGIN_CARD_MEDIUM_2, vertical: 2.0),
+        horizontal: MARGIN_CARD_MEDIUM_2,
+        vertical: 8.0,
+      ),
       child: Row(
-        children: const [
-          ProfileImageView(),
-          SizedBox(
+        children: [
+          ProfileImageView(
+            profile: contact?.profile,
+          ),
+          const SizedBox(
             width: MARGIN_SMALL_2,
           ),
-          ContactNameView(),
+          ContactNameView(
+            name: contact?.name,
+          ),
         ],
       ),
     );
@@ -111,18 +129,18 @@ class ContactItem extends StatelessWidget {
 }
 
 class ContactNameView extends StatelessWidget {
-  const ContactNameView({
-    Key? key,
-  }) : super(key: key);
+  final String? name;
+  const ContactNameView({Key? key, required this.name}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          "Any Diamond",
+          name ?? "",
           style: GoogleFonts.poppins(
             textStyle: const TextStyle(
                 color: TEXT_COLOR_BOLD,
@@ -130,15 +148,15 @@ class ContactNameView extends StatelessWidget {
                 fontSize: TEXT_REGULAR_2X),
           ),
         ),
-        Text(
-          "Fair Isaac Corporation",
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              color: SUBTEXT_COLOR,
-              fontSize: TEXT_SMALL,
-            ),
-          ),
-        ),
+        // Text(
+        //   "Fair Isaac Corporation",
+        //   style: GoogleFonts.poppins(
+        //     textStyle: const TextStyle(
+        //       color: SUBTEXT_COLOR,
+        //       fontSize: TEXT_SMALL,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

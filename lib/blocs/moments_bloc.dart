@@ -12,16 +12,15 @@ class MomentsBloc extends ChangeNotifier {
   bool isDisposed = false;
   FlickManager? flickManager;
   UserVO? userVO;
+  UserVO? loginUser;
 
   final DataModel model = DataModelImpl();
 
   MomentsBloc() {
+    loginUser = model.getLogInUser();
+    _notifySafely();
     model.getMoments().listen((list) {
       moments = list.reversed.toList();
-      model.getLoggedInUser().listen((event) {
-        userVO = event;
-        _notifySafely();
-      });
       isLoading = false;
       _notifySafely();
     });

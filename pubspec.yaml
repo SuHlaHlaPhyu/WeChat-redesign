@@ -46,7 +46,11 @@ dependencies:
   image_picker: ^0.8.5+3
   google_fonts: ^3.0.1
   firebase_auth: ^3.3.19
+  firebase_messaging: ^11.4.1
+  flutter_local_notifications: ^9.5.3+1
   alphabet_list_scroll_view: ^2.0.0
+  qr_flutter:
+  qr_code_scanner:
 
   json_annotation: ^4.5.0
   json_serializable: ^6.2.0

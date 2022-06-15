@@ -2,13 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat_redesign/data/models/data_model.dart';
 import 'package:wechat_redesign/data/models/data_model_impl.dart';
+import 'package:wechat_redesign/fcm/fcm_service.dart';
 import 'package:wechat_redesign/pages/main_page.dart';
 
-import 'pages/start_page.dart';
+import 'pages/auth/start_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FCMService().listenForMessages();
   runApp(MyApp());
 }
 

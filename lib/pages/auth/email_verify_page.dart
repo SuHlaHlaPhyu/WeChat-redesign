@@ -8,7 +8,7 @@ import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/pages/main_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 
-import '../resources/dimens.dart';
+import '../../resources/dimens.dart';
 
 class EmailVerifyPage extends StatelessWidget {
   final UserVO? userVO;

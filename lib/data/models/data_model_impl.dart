@@ -39,13 +39,12 @@ class DataModelImpl extends DataModel {
     var currentMilliseconds = DateTime.now().millisecondsSinceEpoch;
     var newMoment = MomentVO(
         id: currentMilliseconds,
-        userName: "Su Hla Phyu",
+        userName: mDataAgent.getLogInUser().name,
         postFile: fileUrl,
         profilePicture:
-            "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+            mDataAgent.getLogInUser().profile,
         description: description,
         isVideo: isVideoFile);
-    print("=======> prepare craft newsfeed");
     return Future.value(newMoment);
   }
 
@@ -119,7 +118,21 @@ class DataModelImpl extends DataModel {
 
   @override
   Stream<UserVO> getLoggedInUser() {
-    print("========> user ${mDataAgent.getLoggedInUser().length}");
     return mDataAgent.getLoggedInUser();
+  }
+
+  @override
+  UserVO getLogInUser() {
+    return mDataAgent.getLogInUser();
+  }
+
+  @override
+  Future<void> addToContact(String qrCode) {
+    return mDataAgent.addToContact(qrCode);
+  }
+
+  @override
+  Stream<List<UserVO>> getContacts() {
+    return mDataAgent.getContacts();
   }
 }

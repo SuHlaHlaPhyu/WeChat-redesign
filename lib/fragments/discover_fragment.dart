@@ -6,7 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:wechat_redesign/blocs/moments_bloc.dart';
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
-import 'package:wechat_redesign/pages/create_post_page.dart';
+import 'package:wechat_redesign/pages/moments/create_post_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 import 'package:wechat_redesign/viewitems/loading_view.dart';
@@ -344,13 +344,16 @@ class MomentItem extends StatelessWidget {
                 const LikeCommentByOtherSectionView(),
               ],
             ),
-            const Positioned(
+           Positioned(
               top: 17.0,
               left: 30.0,
-              child: UserProfileAndNameSectionView(
-                profile:
-                    "https://bestprofilepictures.com/wp-content/uploads/2021/08/Anime-Girl-Profile-Picture.jpg",
-                name: " Su Hla Phyu",
+              child: Consumer<MomentsBloc>(
+                builder: (context, bloc, child)=>
+                 UserProfileAndNameSectionView(
+                  profile:
+                      moment?.profilePicture ?? "",
+                  name: moment?.userName ?? "",
+                ),
               ),
             ),
           ],
@@ -737,7 +740,7 @@ class HeaderSectionView extends StatelessWidget {
             Column(
               children: [
                 CoverPhotoAndNameView(
-                  name: bloc.userVO?.name,
+                  name: bloc.loginUser?.name,
                 ),
                const Divider(
                   height: 7.0,
@@ -750,7 +753,7 @@ class HeaderSectionView extends StatelessWidget {
               top: 170.0,
               left: 80.0,
               child: ProfileImageView(
-                profile: bloc.userVO?.profile,
+                profile: bloc.loginUser?.profile,
               ),
             ),
           ],

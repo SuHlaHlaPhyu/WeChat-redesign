@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_redesign/blocs/me_bloc.dart';
-import 'package:wechat_redesign/pages/start_page.dart';
+import 'package:wechat_redesign/pages/qr/qr_generate_page.dart';
+import 'package:wechat_redesign/pages/auth/start_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 
@@ -267,22 +268,32 @@ class QRcode_View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 15.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Icon(
-            Icons.qr_code,
-            color: BACKGROUND_COLOR,
-            size: 20.0,
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const QRGeneratePage(),
           ),
-          Icon(
-            Icons.arrow_forward_ios_outlined,
-            color: BACKGROUND_COLOR,
-            size: 20.0,
-          ),
-        ],
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 15.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Icon(
+              Icons.qr_code,
+              color: BACKGROUND_COLOR,
+              size: 20.0,
+            ),
+            Icon(
+              Icons.arrow_forward_ios_outlined,
+              color: BACKGROUND_COLOR,
+              size: 20.0,
+            ),
+          ],
+        ),
       ),
     );
   }

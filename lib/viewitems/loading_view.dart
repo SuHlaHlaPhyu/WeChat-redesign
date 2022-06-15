@@ -17,7 +17,7 @@ class LoadingView extends StatelessWidget {
           width: MARGIN_XXLARGE,
           height: MARGIN_XXLARGE,
           child: LoadingIndicator(
-            indicatorType: Indicator.ballRotateChase,
+            indicatorType: Indicator.ballSpinFadeLoader,
             colors: [
               PRIMARY_COLOR,
               VIVID_RED,

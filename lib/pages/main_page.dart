@@ -7,7 +7,8 @@ import 'package:wechat_redesign/fragments/wechat_fragment.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final int index;
+  const MainPage({Key? key , this.index = 0}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -15,6 +16,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    _selectedIndex = widget.index;
+    super.initState();
+  }
+
   List<BottomNavigationBarItem> buildBottomNavigationBarItems() {
     return [
       BottomNavigationBarItem(

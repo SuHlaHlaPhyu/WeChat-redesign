@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
+
 class ProfileImageView extends StatelessWidget {
+  final String? profile;
   const ProfileImageView({
     Key? key,
+    required this.profile
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const CircleAvatar(
+    return CircleAvatar(
       backgroundImage: NetworkImage(
-        "https://i.pinimg.com/736x/75/8f/57/758f57fe8f91f684be6059b632bee2c0.jpg",
+        profile ?? "",
       ),
       radius: MARGIN_XLARGE,
     );

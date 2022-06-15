@@ -83,68 +83,82 @@ class ContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.circle_outlined, color: SUBTEXT_COLOR),
-            //Icon(Icons.check_circle),
-            SizedBox(
-              width: 5.0,
-            ),
-            Text(
-              "I have read and accept the Terms of Service. ",
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.visible,
-              style: TextStyle(color: SUBTEXT_COLOR),
-            ),
-            //
-          ],
-        ),
-        const Text(
-          "The information collected on this page is only used for account registration.",
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.visible,
-          style: TextStyle(color: SUBTEXT_COLOR),
-        ),
-        const SizedBox(
-          height: MARGIN_LARGE,
-        ),
-        GestureDetector(
-          onTap: () {
-            //
-            onTap();
-          },
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 20.0),
-            height: 45.0,
-            width: 220.0,
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(43, 43, 43, 1),
-              borderRadius: BorderRadius.circular(
-                8.0,
+    return Consumer<SignUpBloc>(
+      builder: (context, bloc, child) => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  bloc.onTapAccepted();
+                },
+                child: Icon(
+                  bloc.isAccepted ? Icons.check_circle : Icons.circle_outlined,
+                  color: bloc.isAccepted ? SIGN_UP_COLOR : SUBTEXT_COLOR,
+                ),
               ),
-            ),
-            child: Center(
-              child: Text(
-                "Accept and Continue",
-                style: GoogleFonts.poppins(
-                  textStyle: const TextStyle(
-                    color: SUBTEXT_COLOR,
-                    fontSize: MARGIN_MEDIUM_2,
+              const SizedBox(
+                width: 5.0,
+              ),
+              const Text(
+                "I have read and accept the Terms of Service. ",
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.visible,
+                style: TextStyle(color: SUBTEXT_COLOR),
+              ),
+              //
+            ],
+          ),
+          const Text(
+            "The information collected on this page is only used for account registration.",
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.visible,
+            style: TextStyle(color: SUBTEXT_COLOR),
+          ),
+          const SizedBox(
+            height: MARGIN_LARGE,
+          ),
+          GestureDetector(
+            onTap: () {
+              if (bloc.isAccepted) {
+                onTap();
+              } else {
+                //
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 20.0),
+              height: 45.0,
+              width: 220.0,
+              decoration: BoxDecoration(
+                color: bloc.isAccepted ? SIGN_UP_COLOR : DISABLE_COLOR,
+                borderRadius: BorderRadius.circular(
+                  8.0,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  "Accept and Continue",
+                  style: GoogleFonts.poppins(
+                    textStyle: TextStyle(
+                      color: bloc.isAccepted
+                          ? BACKGROUND_WHITE_COLOR
+                          : SUBTEXT_COLOR,
+                      fontSize: MARGIN_MEDIUM_2,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(
-          height: kToolbarHeight,
-        ),
-      ],
+          const SizedBox(
+            height: kToolbarHeight,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -8,10 +8,8 @@ class MeBloc extends ChangeNotifier {
   final DataModel _model = DataModelImpl();
 
   MeBloc() {
-    _model.getLoggedInUser().listen((event) {
-      loggedInUser = event;
-      notifyListeners();
-    });
+    loggedInUser = _model.getLogInUser();
+    notifyListeners();
   }
 
   Future onTapLogout() {

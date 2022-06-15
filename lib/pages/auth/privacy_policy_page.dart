@@ -3,15 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
-import 'package:wechat_redesign/pages/email_verify_page.dart';
+import 'package:wechat_redesign/pages/auth/email_verify_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 
-import '../resources/dimens.dart';
+import '../../resources/dimens.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   final UserVO? userVO;
   final File? imageFile;
-  const PrivacyPolicyPage({Key? key,required this.userVO,required this.imageFile}) : super(key: key);
+  const PrivacyPolicyPage(
+      {Key? key, required this.userVO, required this.imageFile})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +89,9 @@ class PrivacyPolicyPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: MARGIN_MEDIUM,),
+                    const SizedBox(
+                      height: MARGIN_MEDIUM,
+                    ),
                     Text(
                       "The Service provided by the Owner allows Users to run a series of technological tools in a self-service manner, allowing them to generate legal documents based on Users' input for their online activities (eg. website, mobile app, etc.). As part of its Service, the Owner allows Users to generate, host and keep one or more document templates up to date online. Under no circumstance will iubenda's staff or any counsel assist Users in making the correct choice or in drafting the correct custom clauses .It is therefore the Users’ sole responsibility to pick the correct choices for their respective scenario or activity, to verify compatibility of the generated documents with applicable law and to ensure that their activity complies with all applicable legal provisions.In light of the above, the Service offered by iubenda cannot be regarded as, nor does it substitute any legal advice given by a professional or expert.",
                       style: GoogleFonts.poppins(
@@ -124,7 +128,7 @@ class PrivacyPolicyPage extends StatelessWidget {
   }
 }
 
-class NextButtonView extends StatelessWidget {
+class NextButtonView extends StatefulWidget {
   final Function onTap;
   const NextButtonView({
     Key? key,
@@ -132,19 +136,35 @@ class NextButtonView extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<NextButtonView> createState() => _NextButtonViewState();
+}
+
+class _NextButtonViewState extends State<NextButtonView> {
+  bool isAccepted = false;
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.circle_outlined, color: SUBTEXT_COLOR),
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isAccepted = !isAccepted;
+                });
+              },
+              child: Icon(
+                isAccepted ? Icons.check_circle : Icons.circle_outlined,
+                color: isAccepted ? SIGN_UP_COLOR : SUBTEXT_COLOR,
+              ),
+            ),
             //Icon(Icons.check_circle),
-            SizedBox(
+            const SizedBox(
               width: 5.0,
             ),
-            Text(
+            const Text(
               "I have read and accept the Terms of Service. ",
               textAlign: TextAlign.center,
               overflow: TextOverflow.visible,
@@ -158,15 +178,19 @@ class NextButtonView extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            //
-            onTap();
+            if(isAccepted){
+              widget.onTap();
+            }else{
+              //
+            }
+
           },
           child: Container(
             margin: const EdgeInsets.only(bottom: 20.0),
             height: 45.0,
             width: 180.0,
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(43, 43, 43, 1),
+              color: isAccepted ? SIGN_UP_COLOR : DISABLE_COLOR,
               borderRadius: BorderRadius.circular(
                 8.0,
               ),
@@ -175,8 +199,10 @@ class NextButtonView extends StatelessWidget {
               child: Text(
                 "Next",
                 style: GoogleFonts.poppins(
-                  textStyle: const TextStyle(
-                    color: SUBTEXT_COLOR,
+                  textStyle: TextStyle(
+                    color: isAccepted
+                        ? BACKGROUND_WHITE_COLOR
+                        : SUBTEXT_COLOR,
                     fontSize: MARGIN_MEDIUM_2,
                   ),
                 ),

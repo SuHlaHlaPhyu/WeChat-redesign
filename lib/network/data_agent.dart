@@ -17,4 +17,9 @@ abstract class DataAgent {
   Future logOut();
   bool isLoggedIn();
   Stream<UserVO> getLoggedInUser();
+  UserVO getLogInUser();
+
+  /// contact
+  Future addToContact(String qrCode);
+  Stream<List<UserVO>> getContacts();
 }

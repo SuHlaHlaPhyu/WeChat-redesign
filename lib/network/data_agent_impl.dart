@@ -10,6 +10,7 @@ import 'package:wechat_redesign/network/data_agent.dart';
 const newsFeedCollection = "moments";
 const fileUploadRef = "uploads";
 const usersCollection = "users";
+const contactsCollection = "contacts";
 
 class DataAgentImpl extends DataAgent {
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
@@ -72,7 +73,7 @@ class DataAgentImpl extends DataAgent {
     return auth
         .createUserWithEmailAndPassword(
             email: newUser.email ?? "", password: newUser.password ?? "")
-        .then((credential) => credential.user?..updateDisplayName(newUser.name))
+        .then((credential) => credential.user?..updateDisplayName(newUser.name)..updatePhotoURL(newUser.profile))
         .then((user) {
       newUser.qrCode = user?.uid ?? "";
       _addNewUser(newUser);
@@ -111,5 +112,46 @@ class DataAgentImpl extends DataAgent {
         .where((event) => event.data() != null)
         .map((event) =>
             UserVO.fromJson(Map<String, dynamic>.from(event.data()!)));
+  }
+
+  Future<UserVO> getUserByID(String? qr){
+    return fireStore
+        .collection(usersCollection)
+        .doc(qr.toString())
+        .get()
+        .asStream()
+        .where((event) => event.data() != null)
+        .map((event) =>
+        UserVO.fromJson(Map<String, dynamic>.from(event.data()!))).first;
+  }
+
+  @override
+  UserVO getLogInUser() {
+    return UserVO(
+      name: auth.currentUser?.displayName,
+      profile: auth.currentUser?.photoURL,
+    );
+  }
+
+  @override
+  Future addToContact(String qrCode) {
+    return getUserByID(qrCode).then((value) {
+      return fireStore.collection(usersCollection).doc(auth.currentUser?.uid).collection(contactsCollection).doc().set(value.toJson()).whenComplete(() {
+        return getUserByID(auth.currentUser?.uid).then((value) => fireStore.collection(usersCollection).doc(qrCode).collection(contactsCollection).doc().set(value.toJson()));
+      });
+    });
+
+  }
+
+  @override
+  Stream<List<UserVO>> getContacts() {
+    return fireStore
+        .collection(usersCollection).doc(auth.currentUser?.uid).collection(contactsCollection)
+        .snapshots()
+        .map((querySnapshots) {
+      return querySnapshots.docs.map<UserVO>((document) {
+        return UserVO.fromJson(document.data());
+      }).toList();
+    });
   }
 }
