@@ -6,15 +6,15 @@ import 'package:wechat_redesign/fragments/me_fragment.dart';
 import 'package:wechat_redesign/fragments/wechat_fragment.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 
-class MainPage extends StatefulWidget {
+class ChatHistoryPage extends StatefulWidget {
   final int index;
-  const MainPage({Key? key , this.index = 0}) : super(key: key);
+  const ChatHistoryPage({Key? key , this.index = 0}) : super(key: key);
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<ChatHistoryPage> createState() => _ChatHistoryPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _ChatHistoryPageState extends State<ChatHistoryPage> {
   int _selectedIndex = 0;
 
   @override

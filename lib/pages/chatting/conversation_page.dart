@@ -15,13 +15,15 @@ import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 import 'package:wechat_redesign/viewitems/sender_profile_view.dart';
 
-class ChattingPage extends StatefulWidget {
-  const ChattingPage({Key? key}) : super(key: key);
+class ConversationPage extends StatefulWidget {
+  final String? receiverId;
+  const ConversationPage({Key? key, required this.receiverId})
+      : super(key: key);
   @override
-  _ChattingPageState createState() => _ChattingPageState();
+  _ConversationPageState createState() => _ConversationPageState();
 }
 
-class _ChattingPageState extends State<ChattingPage> {
+class _ConversationPageState extends State<ConversationPage> {
   _buildMessage(Message message, bool isMe) {
     final Container msg = Container(
       margin: isMe
@@ -47,10 +49,12 @@ class _ChattingPageState extends State<ChattingPage> {
       ),
       child: Text(
         message.text ?? "",
-        style: GoogleFonts.poppins(textStyle: const TextStyle(
-          color: TEXT_COLOR_BOLD,
-          fontSize: TEXT_REGULAR,
-        ),),
+        style: GoogleFonts.poppins(
+          textStyle: const TextStyle(
+            color: TEXT_COLOR_BOLD,
+            fontSize: TEXT_REGULAR,
+          ),
+        ),
       ),
     );
     if (isMe) {
@@ -71,7 +75,7 @@ class _ChattingPageState extends State<ChattingPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ChattingBloc(),
+      create: (context) => ConversationBloc(widget.receiverId),
       child: Scaffold(
         backgroundColor: BACKGROUND_WHITE_COLOR,
         appBar: AppBar(
@@ -187,64 +191,75 @@ class MessageComposerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8.0,
-        vertical: 5.0,
-      ),
-      height: 55.0,
-      decoration: BoxDecoration(
-        color: MSG_COMPOSER_BACKGROUND_COLOR,
-        border: Border.all(
-          color: DIVIDER_COLOR,
+    return Consumer<ConversationBloc>(
+      builder: (context,bloc,child)=>
+       Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8.0,
+          vertical: 5.0,
         ),
-      ),
-      child: Row(
-        children: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.mic_none_outlined,
-            ),
-            iconSize: 30.0,
-            color: MSG_COMPOSER_ICON_COLOR,
-            onPressed: () {},
+        height: 55.0,
+        decoration: BoxDecoration(
+          color: MSG_COMPOSER_BACKGROUND_COLOR,
+          border: Border.all(
+            color: DIVIDER_COLOR,
           ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.only(
-                left: 10.0,
+        ),
+        child: Row(
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.mic_none_outlined,
               ),
-              decoration: BoxDecoration(
-                color: MSG_COMPOSER_TEXTFEID_BACKGROUND_COLOR,
-                border: Border.all(
-                  color: DIVIDER_COLOR,
+              iconSize: 30.0,
+              color: MSG_COMPOSER_ICON_COLOR,
+              onPressed: () {},
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.only(
+                  left: 10.0,
                 ),
-                borderRadius: BorderRadius.circular(
-                  8.0,
+                decoration: BoxDecoration(
+                  color: MSG_COMPOSER_TEXTFEID_BACKGROUND_COLOR,
+                  border: Border.all(
+                    color: DIVIDER_COLOR,
+                  ),
+                  borderRadius: BorderRadius.circular(
+                    8.0,
+                  ),
                 ),
-              ),
-              child: TextField(
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (value) {},
-                decoration: const InputDecoration(
+                child: TextField(
+                  textCapitalization: TextCapitalization.sentences,
+                  onChanged: (value){
+                    bloc.onChangeMessage(value);
+                  },
+                  onSubmitted: (value) {
+                    bloc.sendMessage(value);
+                  },
+                  decoration: const InputDecoration(
                     hintText: 'Message ...',
                     hintStyle: TextStyle(
                       color: ICON_COLOR,
                     ),
                     border: InputBorder.none,
-                    suffixIcon: Icon(Icons.tag_faces_rounded)),
+                    suffixIcon: Icon(
+                      Icons.tag_faces_rounded,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-          IconButton(
-            icon: isClose ? const Icon(Icons.close) : const Icon(Icons.add),
-            iconSize: 30.0,
-            color: MSG_COMPOSER_ICON_COLOR,
-            onPressed: () {
-              onTapAdd();
-            },
-          ),
-        ],
+            IconButton(
+              icon: isClose ? const Icon(Icons.close) : const Icon(Icons.add),
+              iconSize: 30.0,
+              color: MSG_COMPOSER_ICON_COLOR,
+              onPressed: () {
+                onTapAdd();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -257,7 +272,7 @@ class CategoryIconSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChattingBloc>(
+    return Consumer<ConversationBloc>(
       builder: (context, bloc, child) => Container(
         height: 200.0,
         width: double.infinity,
@@ -351,7 +366,7 @@ class ChosenFileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChattingBloc>(
+    return Consumer<ConversationBloc>(
         builder: (context, bloc, child) => bloc.isFromCamera == true
             ? Container(
                 color: MSG_COMPOSER_CATEGORY_COLOR,

@@ -1,7 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:wechat_redesign/pages/chatting/chatting_page.dart';
+import 'package:wechat_redesign/pages/chatting/conversation_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 
@@ -46,7 +46,9 @@ class WeChatFragment extends StatelessWidget {
               onTap: (index) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ChattingPage()),
+                  MaterialPageRoute(builder: (context) => const ConversationPage(
+                    receiverId: "",
+                  )),
                 );
               },
             ),

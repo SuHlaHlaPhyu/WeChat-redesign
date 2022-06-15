@@ -93,8 +93,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           children: [
                             UserProfileAndNameSectionView(
                               isMe: true,
-                              profile: bloc.loginUser?.profile ?? "",
-                              name: bloc.loginUser?.name ?? "",
+                              profile: bloc.profilePicture ?? "",
+                              name: bloc.userName ?? "",
                             ),
                             const SizedBox(
                               height: MARGIN_SMALL_2,

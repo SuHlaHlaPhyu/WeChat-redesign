@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wechat_redesign/data/models/data_model.dart';
 import 'package:wechat_redesign/data/models/data_model_impl.dart';
 import 'package:wechat_redesign/fcm/fcm_service.dart';
-import 'package:wechat_redesign/pages/main_page.dart';
+import 'package:wechat_redesign/pages/chatting/chat_history_page.dart';
 
 import 'pages/auth/start_page.dart';
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: _model.isLoggedIn() ? const MainPage() : const StartPage(),
+      home: _model.isLoggedIn() ? const ChatHistoryPage() : const StartPage(),
     );
   }
 }

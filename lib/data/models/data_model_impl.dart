@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:wechat_redesign/data/models/data_model.dart';
+import 'package:wechat_redesign/data/vos/message_vo.dart';
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/network/data_agent.dart';
@@ -41,8 +42,7 @@ class DataModelImpl extends DataModel {
         id: currentMilliseconds,
         userName: mDataAgent.getLogInUser().name,
         postFile: fileUrl,
-        profilePicture:
-            mDataAgent.getLogInUser().profile,
+        profilePicture: mDataAgent.getLogInUser().profile,
         description: description,
         isVideo: isVideoFile);
     return Future.value(newMoment);
@@ -86,19 +86,16 @@ class DataModelImpl extends DataModel {
   }
 
   @override
-  Future<void> register(UserVO? userVO,File? imageFile) {
-    if(imageFile != null){
-      return mDataAgent
-          .uploadFileToFirebase(imageFile)
-          .then(
+  Future<void> register(UserVO? userVO, File? imageFile) {
+    if (imageFile != null) {
+      return mDataAgent.uploadFileToFirebase(imageFile).then(
             (downloadUrl) => craftUserVOForRegister(userVO, downloadUrl).then(
               (user) => mDataAgent.registerNewUser(user),
-        ),
-      );
-    }else{
+            ),
+          );
+    } else {
       return mDataAgent.registerNewUser(userVO!);
     }
-
   }
 
   @override
@@ -134,5 +131,16 @@ class DataModelImpl extends DataModel {
   @override
   Stream<List<UserVO>> getContacts() {
     return mDataAgent.getContacts();
+  }
+
+  Future<MessageVO> craftMessageVO(MessageVO messageVO) {
+    var currentMilliseconds = DateTime.now().millisecondsSinceEpoch;
+    messageVO.timestamp = currentMilliseconds.toString();
+    return Future.value(messageVO);
+  }
+
+  @override
+  Future<void> sendMessage(MessageVO message,String receiverId) {
+    return craftMessageVO(message).then((value) => mDataAgent.sendMessage(value,receiverId));
   }
 }

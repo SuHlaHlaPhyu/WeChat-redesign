@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_redesign/blocs/verify_email_bloc.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
-import 'package:wechat_redesign/pages/main_page.dart';
+import 'package:wechat_redesign/pages/chatting/chat_history_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 
 import '../../resources/dimens.dart';
@@ -60,7 +60,7 @@ class EmailVerifyPage extends StatelessWidget {
                           .then((value) => Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const MainPage(),
+                                  builder: (context) => const ChatHistoryPage(),
                                 ),
                               ))
                           .catchError(

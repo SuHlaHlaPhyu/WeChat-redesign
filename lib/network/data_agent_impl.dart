@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:wechat_redesign/data/vos/message_vo.dart';
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/network/data_agent.dart';
@@ -11,12 +13,26 @@ const newsFeedCollection = "moments";
 const fileUploadRef = "uploads";
 const usersCollection = "users";
 const contactsCollection = "contacts";
+const contactsAndMessages = "contactsAndMessages";
 
 class DataAgentImpl extends DataAgent {
+  static final DataAgentImpl _singleton =
+  DataAgentImpl._internal();
+
+  DataAgentImpl._internal();
+
+  factory DataAgentImpl() {
+    return _singleton;
+  }
+  /// fire store
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   /// Auth
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  /// realtime
+  var databaseRef = FirebaseDatabase.instance.reference();
+
   @override
   Stream<List<MomentVO>> getMoments() {
     return fireStore
@@ -73,7 +89,9 @@ class DataAgentImpl extends DataAgent {
     return auth
         .createUserWithEmailAndPassword(
             email: newUser.email ?? "", password: newUser.password ?? "")
-        .then((credential) => credential.user?..updateDisplayName(newUser.name)..updatePhotoURL(newUser.profile))
+        .then((credential) => credential.user
+          ?..updateDisplayName(newUser.name)
+          ..updatePhotoURL(newUser.profile))
         .then((user) {
       newUser.qrCode = user?.uid ?? "";
       _addNewUser(newUser);
@@ -103,7 +121,7 @@ class DataAgentImpl extends DataAgent {
   }
 
   @override
-  Stream<UserVO> getLoggedInUser(){
+  Stream<UserVO> getLoggedInUser() {
     return fireStore
         .collection(usersCollection)
         .doc(auth.currentUser?.uid.toString())
@@ -114,7 +132,7 @@ class DataAgentImpl extends DataAgent {
             UserVO.fromJson(Map<String, dynamic>.from(event.data()!)));
   }
 
-  Future<UserVO> getUserByID(String? qr){
+  Future<UserVO> getUserByID(String? qr) {
     return fireStore
         .collection(usersCollection)
         .doc(qr.toString())
@@ -122,7 +140,8 @@ class DataAgentImpl extends DataAgent {
         .asStream()
         .where((event) => event.data() != null)
         .map((event) =>
-        UserVO.fromJson(Map<String, dynamic>.from(event.data()!))).first;
+            UserVO.fromJson(Map<String, dynamic>.from(event.data()!)))
+        .first;
   }
 
   @override
@@ -130,28 +149,59 @@ class DataAgentImpl extends DataAgent {
     return UserVO(
       name: auth.currentUser?.displayName,
       profile: auth.currentUser?.photoURL,
+      qrCode: auth.currentUser?.uid,
     );
   }
 
   @override
   Future addToContact(String qrCode) {
     return getUserByID(qrCode).then((value) {
-      return fireStore.collection(usersCollection).doc(auth.currentUser?.uid).collection(contactsCollection).doc().set(value.toJson()).whenComplete(() {
-        return getUserByID(auth.currentUser?.uid).then((value) => fireStore.collection(usersCollection).doc(qrCode).collection(contactsCollection).doc().set(value.toJson()));
+      return fireStore
+          .collection(usersCollection)
+          .doc(auth.currentUser?.uid)
+          .collection(contactsCollection)
+          .doc()
+          .set(value.toJson())
+          .whenComplete(() {
+        return getUserByID(auth.currentUser?.uid).then((value) => fireStore
+            .collection(usersCollection)
+            .doc(qrCode)
+            .collection(contactsCollection)
+            .doc()
+            .set(value.toJson()));
       });
     });
-
   }
 
   @override
   Stream<List<UserVO>> getContacts() {
     return fireStore
-        .collection(usersCollection).doc(auth.currentUser?.uid).collection(contactsCollection)
+        .collection(usersCollection)
+        .doc(auth.currentUser?.uid)
+        .collection(contactsCollection)
         .snapshots()
         .map((querySnapshots) {
       return querySnapshots.docs.map<UserVO>((document) {
         return UserVO.fromJson(document.data());
       }).toList();
+    });
+  }
+
+  @override
+  Future<void> sendMessage(MessageVO message, String receiverId) {
+    return databaseRef
+        .child(contactsAndMessages)
+        .child(auth.currentUser?.uid ?? "")
+        .child(receiverId)
+        .child(message.timestamp.toString())
+        .set(message.toJson())
+        .whenComplete(() {
+      return databaseRef
+          .child(contactsAndMessages)
+          .child(receiverId)
+          .child(auth.currentUser?.uid ?? "")
+          .child(message.timestamp.toString())
+          .set(message.toJson());
     });
   }
 }

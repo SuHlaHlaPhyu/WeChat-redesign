@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_redesign/blocs/contacts_bloc.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
+import 'package:wechat_redesign/pages/chatting/conversation_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 import 'package:wechat_redesign/viewitems/loading_view.dart';
@@ -106,23 +107,31 @@ class ContactItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: MARGIN_CARD_MEDIUM_2,
-        vertical: 8.0,
-      ),
-      child: Row(
-        children: [
-          ProfileImageView(
-            profile: contact?.profile,
-          ),
-          const SizedBox(
-            width: MARGIN_SMALL_2,
-          ),
-          ContactNameView(
-            name: contact?.name,
-          ),
-        ],
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>ConversationPage(receiverId: contact?.qrCode,)),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: MARGIN_CARD_MEDIUM_2,
+          vertical: 8.0,
+        ),
+        child: Row(
+          children: [
+            ProfileImageView(
+              profile: contact?.profile,
+            ),
+            const SizedBox(
+              width: MARGIN_SMALL_2,
+            ),
+            ContactNameView(
+              name: contact?.name,
+            ),
+          ],
+        ),
       ),
     );
   }

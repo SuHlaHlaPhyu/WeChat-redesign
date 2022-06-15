@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:wechat_redesign/blocs/qr_scan_bloc.dart';
-import 'package:wechat_redesign/pages/main_page.dart';
+import 'package:wechat_redesign/pages/chatting/chat_history_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/viewitems/loading_view.dart';
 
@@ -174,7 +174,7 @@ class AddToContactView extends StatelessWidget {
                 (value) => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MainPage(
+                    builder: (context) => const ChatHistoryPage(
                       index: 1,
                     ),
                   ),
