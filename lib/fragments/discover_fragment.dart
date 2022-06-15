@@ -9,6 +9,7 @@ import 'package:wechat_redesign/data/vos/moment_vo.dart';
 import 'package:wechat_redesign/pages/create_post_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
+import 'package:wechat_redesign/viewitems/loading_view.dart';
 import 'package:wechat_redesign/viewitems/moment_overlay.dart';
 
 import '../viewitems/user_profile_and_name_section_view.dart';
@@ -40,7 +41,7 @@ class _DiscoverFragmentState extends State<DiscoverFragment> {
       create: (context) => bloc,
       child: Selector<MomentsBloc, bool>(
         selector: (context, bloc) => bloc.isLoading,
-        builder: (context, moments, child) => Scaffold(
+        builder: (context, isLoading, child) => Scaffold(
           backgroundColor: BACKGROUND_COLOR,
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -111,6 +112,15 @@ class _DiscoverFragmentState extends State<DiscoverFragment> {
                     Overlay.of(context)?.insert(_getCommentEntry(context));
                   },
                 ),
+                Visibility(
+                  visible: isLoading,
+                  child: Container(
+                    color: Colors.black12,
+                    child: const Center(
+                      child: LoadingView(),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -718,26 +728,33 @@ class HeaderSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 290,
-      child: Stack(
-        children: [
-          Column(
-            children: const [
-              CoverPhotoAndNameView(),
-              Divider(
-                height: 7.0,
-                thickness: 7.0,
+    return Consumer<MomentsBloc>(
+      builder: (context,bloc,child) =>
+       SizedBox(
+        height: 290,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                CoverPhotoAndNameView(
+                  name: bloc.userVO?.name,
+                ),
+               const Divider(
+                  height: 7.0,
+                  thickness: 7.0,
+                ),
+               const AccountInfoView()
+              ],
+            ),
+            Positioned(
+              top: 170.0,
+              left: 80.0,
+              child: ProfileImageView(
+                profile: bloc.userVO?.profile,
               ),
-              AccountInfoView()
-            ],
-          ),
-          const Positioned(
-            top: 170.0,
-            left: 80.0,
-            child: ProfileImageView(),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -778,8 +795,10 @@ class AccountInfoView extends StatelessWidget {
 }
 
 class CoverPhotoAndNameView extends StatelessWidget {
+  final String? name;
   const CoverPhotoAndNameView({
     Key? key,
+    required this.name
   }) : super(key: key);
 
   @override
@@ -798,7 +817,7 @@ class CoverPhotoAndNameView extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Text(
-            "Nina Rocha",
+            name ?? "",
             style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
               color: Colors.white,
@@ -813,18 +832,20 @@ class CoverPhotoAndNameView extends StatelessWidget {
 }
 
 class ProfileImageView extends StatelessWidget {
+  final String? profile;
   const ProfileImageView({
     Key? key,
+    required this.profile
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const CircleAvatar(
+    return CircleAvatar(
       radius: PROFILE_MOMENT_BORDER_SIZE,
       backgroundColor: SUBTEXT_COLOR,
       child: CircleAvatar(
         backgroundImage: NetworkImage(
-          "https://i.pinimg.com/originals/e2/01/68/e20168a4340f439462017456d2e0b8d2.jpg",
+          "$profile",
         ),
         radius: PROFILE_MOMENT_SIZE,
       ),

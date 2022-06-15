@@ -20,7 +20,6 @@ class DataModelImpl extends DataModel {
   @override
   Future<void> addNewMoment(String description, File? file, bool isVideo) {
     if (file != null) {
-      print("======> with image");
       return mDataAgent
           .uploadFileToFirebase(file)
           .then(
@@ -101,5 +100,26 @@ class DataModelImpl extends DataModel {
       return mDataAgent.registerNewUser(userVO!);
     }
 
+  }
+
+  @override
+  Future<void> login(String email, String password) {
+    return mDataAgent.login(email, password);
+  }
+
+  @override
+  bool isLoggedIn() {
+    return mDataAgent.isLoggedIn();
+  }
+
+  @override
+  Future<void> logOut() {
+    return mDataAgent.logOut();
+  }
+
+  @override
+  Stream<UserVO> getLoggedInUser() {
+    print("========> user ${mDataAgent.getLoggedInUser().length}");
+    return mDataAgent.getLoggedInUser();
   }
 }

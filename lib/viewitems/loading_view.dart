@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 
 class LoadingView extends StatelessWidget {
@@ -16,8 +17,12 @@ class LoadingView extends StatelessWidget {
           width: MARGIN_XXLARGE,
           height: MARGIN_XXLARGE,
           child: LoadingIndicator(
-            indicatorType: Indicator.circleStrokeSpin,
-            colors: [Colors.white],
+            indicatorType: Indicator.ballRotateChase,
+            colors: [
+              PRIMARY_COLOR,
+              VIVID_RED,
+              MILD_BLUE,
+            ],
             strokeWidth: 2,
             backgroundColor: Colors.transparent,
             pathBackgroundColor: Colors.black,

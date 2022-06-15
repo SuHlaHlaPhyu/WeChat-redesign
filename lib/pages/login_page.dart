@@ -1,55 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wechat_redesign/blocs/login_bloc.dart';
 import 'package:wechat_redesign/pages/main_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
+
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AUTH_BACKGROUND_COLOR,
-      body: Stack(
-        children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: GestureDetector(
-              onTap: (){
-                Navigator.pop(context);
-              },
-              child:const Padding(
-                padding: EdgeInsets.only(
-                  left: 8.0,
-                  top: kToolbarHeight,
-                ),
-                child: Icon(
-                  Icons.close,
-                  color: CROSS_ICON_COLOR,
+    return ChangeNotifierProvider(
+      create: (context) => LoginBloc(),
+      child: Selector<LoginBloc, bool>(
+        selector: (context, bloc) => bloc.isLoading,
+        builder: (context, isLoading, child) => Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: AUTH_BACKGROUND_COLOR,
+          body: Stack(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(
+                      left: 8.0,
+                      top: kToolbarHeight,
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: CROSS_ICON_COLOR,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-          const Positioned(
-            top: 130.0,
-            right: 12.0,
-            left: 12.0,
-            child: InputSectionView(),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: ContinueButton(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MainPage(),
+              const Positioned(
+                top: 130.0,
+                right: 12.0,
+                left: 12.0,
+                child: InputSectionView(),
+              ),
+              Consumer<LoginBloc>(
+                builder: (context, bloc, child) => Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ContinueButton(
+                    onTap: () {
+                      bloc
+                          .onTapLogin()
+                          .then((value) => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MainPage(),
+                                ),
+                              ))
+                          .catchError(
+                            (error) =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  error.toString(),
+                                ),
+                              ),
+                            ),
+                          );
+                    },
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+              Visibility(
+                visible: isLoading,
+                child: Container(
+                  color: Colors.black12,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              )
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -132,10 +165,10 @@ class InputSectionView extends StatelessWidget {
             ),
           ),
         ),
-        const  SizedBox(
+        const SizedBox(
           height: MARGIN_LARGE_2,
         ),
-        const  TextFieldView()
+        const TextFieldView()
       ],
     );
   }
@@ -148,71 +181,80 @@ class TextFieldView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 15.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Account",
-                style: GoogleFonts.poppins(
-                  textStyle: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 250.0,
-                child: TextField(
-                  controller: TextEditingController(text: ""),
-                  onChanged: (text) {
-                    //
-                  },
-                  decoration: const InputDecoration(
-                    hintText: "Enter your email",
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(
-                      color: SUBTEXT_COLOR,
+    return Consumer<LoginBloc>(
+      builder: (context, bloc, child) => Padding(
+        padding: const EdgeInsets.only(left: 15.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Account",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Password",
-                style: GoogleFonts.poppins(
-                  textStyle: const TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 250.0,
-                child: TextField(
-                  controller: TextEditingController(text: ""),
-                  onChanged: (text) {
-                    //
-                  },
-                  decoration: const InputDecoration(
-                    hintText: "Enter Password",
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(
-                      color: SUBTEXT_COLOR,
+                SizedBox(
+                  width: 250.0,
+                  child: TextField(
+                    controller: TextEditingController(text: ""),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    onChanged: (text) {
+                      bloc.onEmailChanged(text);
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "Enter your email",
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(
+                        color: SUBTEXT_COLOR,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Password",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 250.0,
+                  child: TextField(
+                    controller: TextEditingController(text: ""),
+                    onChanged: (text) {
+                      //
+                      bloc.onPasswordChanged(text);
+                    },
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: "Enter Password",
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(
+                        color: SUBTEXT_COLOR,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -42,6 +42,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
           children: [
             Consumer<CreatePostBloc>(
               builder: (context, bloc, chile) => Scaffold(
+                resizeToAvoidBottomInset: false,
                 backgroundColor: BACKGROUND_COLOR,
                 appBar: AppBar(
                   elevation: 0.0,

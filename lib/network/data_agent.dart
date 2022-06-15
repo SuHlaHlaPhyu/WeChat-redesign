@@ -10,8 +10,11 @@ abstract class DataAgent {
   Future<void> deleteMoment(int postId);
   Stream<MomentVO> getMomentById(int momentId);
   Future<String> uploadFileToFirebase(File image);
-  Future<void> editPost(MomentVO newsFeed);
 
   /// auth
   Future registerNewUser(UserVO newUser);
+  Future login(String email, String password);
+  Future logOut();
+  bool isLoggedIn();
+  Stream<UserVO> getLoggedInUser();
 }

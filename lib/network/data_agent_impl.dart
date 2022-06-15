@@ -11,7 +11,7 @@ const newsFeedCollection = "moments";
 const fileUploadRef = "uploads";
 const usersCollection = "users";
 
-class DataAgentImpl extends DataAgent{
+class DataAgentImpl extends DataAgent {
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   /// Auth
@@ -68,18 +68,11 @@ class DataAgentImpl extends DataAgent{
   }
 
   @override
-  Future<void> editPost(MomentVO newsFeed) {
-    // TODO: implement editPost
-    throw UnimplementedError();
-  }
-
-  @override
   Future registerNewUser(UserVO newUser) {
     return auth
         .createUserWithEmailAndPassword(
-        email: newUser.email ?? "", password: newUser.password ?? "")
-        .then((credential) =>
-    credential.user?..updateDisplayName(newUser.name))
+            email: newUser.email ?? "", password: newUser.password ?? "")
+        .then((credential) => credential.user?..updateDisplayName(newUser.name))
         .then((user) {
       newUser.qrCode = user?.uid ?? "";
       _addNewUser(newUser);
@@ -91,5 +84,32 @@ class DataAgentImpl extends DataAgent{
         .collection(usersCollection)
         .doc(newUser.qrCode.toString())
         .set(newUser.toJson());
+  }
+
+  @override
+  Future login(String email, String password) {
+    return auth.signInWithEmailAndPassword(email: email, password: password);
+  }
+
+  @override
+  bool isLoggedIn() {
+    return auth.currentUser != null;
+  }
+
+  @override
+  Future logOut() {
+    return auth.signOut();
+  }
+
+  @override
+  Stream<UserVO> getLoggedInUser(){
+    return fireStore
+        .collection(usersCollection)
+        .doc(auth.currentUser?.uid.toString())
+        .get()
+        .asStream()
+        .where((event) => event.data() != null)
+        .map((event) =>
+            UserVO.fromJson(Map<String, dynamic>.from(event.data()!)));
   }
 }

@@ -1,6 +1,8 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wechat_redesign/blocs/me_bloc.dart';
 import 'package:wechat_redesign/pages/start_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
@@ -10,18 +12,21 @@ class MeFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ME_BACKGROUND_COLOR,
-      body: Stack(
-        children: const [
-          BodySectionView(),
-          Positioned(
-            top: 130,
-            left: 130,
-            child: ProfileImageView(),
-          ),
-          LogoutSectionView(),
-        ],
+    return ChangeNotifierProvider(
+      create: (context) => MeBloc(),
+      child: Scaffold(
+        backgroundColor: ME_BACKGROUND_COLOR,
+        body: Stack(
+          children: const [
+            BodySectionView(),
+            Positioned(
+              top: 130,
+              left: 145,
+              child: ProfileImageView(),
+            ),
+            LogoutSectionView(),
+          ],
+        ),
       ),
     );
   }
@@ -34,37 +39,41 @@ class LogoutSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: GestureDetector(
-        onTap: (){
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const StartPage(),
+    return Consumer<MeBloc>(
+      builder: (context, bloc, child) => Align(
+        alignment: Alignment.bottomCenter,
+        child: GestureDetector(
+          onTap: () {
+            bloc.onTapLogout().then(
+                  (value) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StartPage(),
+                    ),
+                  ),
+                );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 20.0),
+            height: 40,
+            width: 160,
+            decoration: BoxDecoration(
+              color: BACKGROUND_WHITE_COLOR,
+              borderRadius: BorderRadius.circular(
+                18.0,
+              ),
+              border: Border.all(
+                color: DIVIDER_COLOR,
+              ),
             ),
-          );
-        },
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 20.0),
-          height: 40,
-          width: 160,
-          decoration: BoxDecoration(
-            color: BACKGROUND_WHITE_COLOR,
-            borderRadius: BorderRadius.circular(
-              18.0,
-            ),
-            border: Border.all(
-              color: DIVIDER_COLOR,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              "Log Out",
-              style: GoogleFonts.poppins(
-                textStyle: const TextStyle(
-                  color: LOGOUT_TEXT_COLOR,
-                  fontSize: MARGIN_MEDIUM_2,
+            child: Center(
+              child: Text(
+                "Log Out",
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                    color: LOGOUT_TEXT_COLOR,
+                    fontSize: MARGIN_MEDIUM_2,
+                  ),
                 ),
               ),
             ),
@@ -82,14 +91,17 @@ class ProfileImageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CircleAvatar(
-      radius: PROFILE_IMAGE_BORDER_SIZE,
-      backgroundColor: PROFILE_BORDER_COLOR,
-      child: CircleAvatar(
-        backgroundImage: NetworkImage(
-          "https://i.pinimg.com/originals/e2/01/68/e20168a4340f439462017456d2e0b8d2.jpg",
+    return Consumer<MeBloc>(
+      builder: (context,bloc,child)=>
+       CircleAvatar(
+        radius: PROFILE_IMAGE_BORDER_SIZE,
+        backgroundColor: PROFILE_BORDER_COLOR,
+        child: CircleAvatar(
+          backgroundImage: NetworkImage(
+            "${bloc.loggedInUser?.profile}",
+          ),
+          radius: PROFILE_IMAGE_SIZE,
         ),
-        radius: PROFILE_IMAGE_SIZE,
       ),
     );
   }
@@ -235,8 +247,9 @@ class HeaderSectionView extends StatelessWidget {
       ),
       child: Row(
         children: const [
-          SizedBox(),
-          Spacer(),
+          SizedBox(
+            width: 50.0,
+          ),
           Spacer(),
           NameAndIDView(),
           Spacer(),
@@ -282,27 +295,29 @@ class NameAndIDView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          "Amie Deane",
-          style: GoogleFonts.poppins(
+    return Consumer<MeBloc>(
+      builder: (context, bloc, child) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            bloc.loggedInUser?.name ?? "",
+            style: GoogleFonts.poppins(
+                textStyle: const TextStyle(
+              color: Colors.white,
+              fontSize: TEXT_REGULAR_3X,
+            )),
+          ),
+          Text(
+            "Alberto203",
+            style: GoogleFonts.poppins(
               textStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: TEXT_REGULAR_3X,
-          )),
-        ),
-        Text(
-          "Alberto203",
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              color: BACKGROUND_COLOR,
-              fontSize: TEXT_SMALL,
+                color: BACKGROUND_COLOR,
+                fontSize: TEXT_SMALL,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

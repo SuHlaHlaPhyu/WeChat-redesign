@@ -13,16 +13,17 @@ import '../resources/dimens.dart';
 class EmailVerifyPage extends StatelessWidget {
   final UserVO? userVO;
   final File? imageFile;
-  const EmailVerifyPage({Key? key,required this.userVO,required this.imageFile}) : super(key: key);
+  const EmailVerifyPage(
+      {Key? key, required this.userVO, required this.imageFile})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => VerifyEmailBloc(userVO,imageFile),
-      child: Selector<VerifyEmailBloc,bool>(
-        selector: (context,bloc) => bloc.isLoading,
-        builder: (context,isLoading,child) =>
-         Scaffold(
+      create: (context) => VerifyEmailBloc(userVO, imageFile),
+      child: Selector<VerifyEmailBloc, bool>(
+        selector: (context, bloc) => bloc.isLoading,
+        builder: (context, isLoading, child) => Scaffold(
           backgroundColor: AUTH_BACKGROUND_COLOR,
           appBar: AppBar(
             elevation: 0.0,
@@ -50,23 +51,28 @@ class EmailVerifyPage extends StatelessWidget {
             children: [
               const EmailVerifyView(),
               Consumer<VerifyEmailBloc>(
-                builder: (context,bloc,child) =>
-                 Align(
+                builder: (context, bloc, child) => Align(
                   alignment: Alignment.bottomCenter,
                   child: OkButtonView(
-                    onTap: (){
+                    onTap: () {
                       bloc
                           .onTapRegister()
-                          .then((value) => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MainPage(),
-                        ),
-                      ))
-                          .catchError((error) => ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(error.toString()))) );
-
-
+                          .then((value) => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MainPage(),
+                                ),
+                              ))
+                          .catchError(
+                            (error) =>
+                                ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  error.toString(),
+                                ),
+                              ),
+                            ),
+                          );
                     },
                   ),
                 ),
@@ -144,8 +150,7 @@ class EmailVerifyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<VerifyEmailBloc>(
-      builder: (context, bloc, child)=>
-       Column(
+      builder: (context, bloc, child) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
@@ -197,9 +202,10 @@ class EmailVerifyView extends StatelessWidget {
                         onChanged: (text) {
                           //
                           bloc.onEmailChanged(text);
-                        }, style: const TextStyle(
-                        color: Colors.white,
-                      ),
+                        },
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
                         decoration: const InputDecoration(
                           hintText: "Enter email address",
                           border: InputBorder.none,

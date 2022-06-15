@@ -12,4 +12,9 @@ abstract class DataModel {
 
   /// auth
   Future<void> register(UserVO? userVO,File? imageFile);
+  Future<void> login(String email, String password);
+
+  bool isLoggedIn();
+  Stream<UserVO> getLoggedInUser();
+  Future<void> logOut();
 }
