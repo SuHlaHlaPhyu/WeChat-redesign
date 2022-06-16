@@ -139,8 +139,31 @@ class DataModelImpl extends DataModel {
     return Future.value(messageVO);
   }
 
+  Future<MessageVO> craftMessageVOWithImage(
+      MessageVO? messageVO, String imageUrl) {
+    messageVO?.file = imageUrl;
+    return Future.value(messageVO);
+  }
+
   @override
-  Future<void> sendMessage(MessageVO message,String receiverId) {
-    return craftMessageVO(message).then((value) => mDataAgent.sendMessage(value,receiverId));
+  Future<void> sendMessage(
+      MessageVO message, String receiverId, File? sentFile) {
+    if (sentFile != null) {
+      return craftMessageVO(message).then(
+        (value) => mDataAgent.uploadFileToFirebase(sentFile).then(
+              (imageUrl) => craftMessageVOWithImage(message, imageUrl).then(
+                (value) => mDataAgent.sendMessage(message, receiverId),
+              ),
+            ),
+      );
+    } else {
+      return craftMessageVO(message)
+          .then((value) => mDataAgent.sendMessage(value, receiverId));
+    }
+  }
+
+  @override
+  Stream<List<MessageVO>> getConversationsList(String userId) {
+    return mDataAgent.getConversationsList(userId);
   }
 }

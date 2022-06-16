@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
 class SenderProfileView extends StatelessWidget {
+  final String? profile;
   const SenderProfileView({
     Key? key,
+    required this.profile,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const CircleAvatar(
+    return CircleAvatar(
       backgroundImage: NetworkImage(
-        "https://www.teahub.io/photos/full/298-2981503_cute-girls-for-fb-profile-dp-cute-best.jpg",
+        profile ?? "",
       ),
       radius: SENDER_PROFILE_SIZE,
     );

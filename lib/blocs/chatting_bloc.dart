@@ -16,6 +16,10 @@ class ConversationBloc extends ChangeNotifier {
   String? receiverUserId;
   String message = "";
   UserVO? loginUser;
+  File? sentFile;
+  bool isVideo = false;
+  List<MessageVO>? conversationList;
+  bool isLoading = false;
 
   DataModel dataModel = DataModelImpl();
 
@@ -23,11 +27,30 @@ class ConversationBloc extends ChangeNotifier {
     receiverUserId = receiverId;
     loginUser = dataModel.getLogInUser();
     _notifySafely();
+    dataModel.getConversationsList(receiverId ?? "").listen((event) {
+      conversationList = event.reversed.toList();
+      _notifySafely();
+    });
   }
 
   void sendMessage(String message){
     prepareMessageVO(message).then((value) {
-      dataModel.sendMessage(value, receiverUserId ?? "");
+      if(chosenFile != null){
+        sentFile = File(chosenFile?.path.toString() ?? "");
+      }else if (chosenImage != null){
+        sentFile = chosenImage;
+      }else {
+        sentFile = null;
+      }
+      _showLoading();
+      dataModel.sendMessage(value, receiverUserId ?? "",sentFile).then((value) {
+        sentFile = null;
+        chosenImage = null;
+        chosenFile = null;
+        isVideo = false;
+        _hideLoading();
+        _notifySafely();
+      });
       _notifySafely();
     });
   }
@@ -39,6 +62,7 @@ class ConversationBloc extends ChangeNotifier {
       profilePic: loginUser?.profile,
       userId: loginUser?.qrCode,
       file: "",
+      isVideo: isVideo,
     );
     return Future.value(messageObj);
   }
@@ -51,6 +75,7 @@ class ConversationBloc extends ChangeNotifier {
     if (imageFile?.extension != "mp4") {
       chosenFile = imageFile;
     } else {
+      isVideo = true;
       chosenFile = imageFile;
     }
     _notifySafely();
@@ -66,6 +91,16 @@ class ConversationBloc extends ChangeNotifier {
     chosenFile = null;
     chosenImage = null;
     isFromCamera = false;
+    _notifySafely();
+  }
+
+  void _showLoading() {
+    isLoading = true;
+    _notifySafely();
+  }
+
+  void _hideLoading() {
+    isLoading = false;
     _notifySafely();
   }
 

@@ -4,7 +4,6 @@ part 'message_vo.g.dart';
 
 @JsonSerializable()
 class MessageVO {
-
   @JsonKey(name: "file")
   String? file;
 
@@ -23,6 +22,8 @@ class MessageVO {
   @JsonKey(name: "user_id")
   String? userId;
 
+  @JsonKey(name: "is_video")
+  bool? isVideo;
 
   MessageVO(
       {this.file,
@@ -30,12 +31,12 @@ class MessageVO {
       this.name,
       this.profilePic,
       this.timestamp,
-      this.userId});
-
+      this.userId,
+      this.isVideo});
 
   @override
   String toString() {
-    return 'MessageVO{file: $file, message: $message, name: $name, profilePic: $profilePic, timestamp: $timestamp, userId: $userId}';
+    return 'MessageVO{file: $file, message: $message, name: $name, profilePic: $profilePic, timestamp: $timestamp, userId: $userId, isVideo: $isVideo}';
   }
 
   factory MessageVO.fromJson(Map<String, dynamic> json) =>

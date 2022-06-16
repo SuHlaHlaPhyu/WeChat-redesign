@@ -16,14 +16,14 @@ const contactsCollection = "contacts";
 const contactsAndMessages = "contactsAndMessages";
 
 class DataAgentImpl extends DataAgent {
-  static final DataAgentImpl _singleton =
-  DataAgentImpl._internal();
+  static final DataAgentImpl _singleton = DataAgentImpl._internal();
 
   DataAgentImpl._internal();
 
   factory DataAgentImpl() {
     return _singleton;
   }
+
   /// fire store
   FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
@@ -202,6 +202,22 @@ class DataAgentImpl extends DataAgent {
           .child(auth.currentUser?.uid ?? "")
           .child(message.timestamp.toString())
           .set(message.toJson());
+    });
+  }
+
+  @override
+  Stream<List<MessageVO>> getConversationsList(String userId) {
+    return databaseRef
+        .child(contactsAndMessages)
+        .child(auth.currentUser?.uid ?? "")
+        .child(userId)
+        .onValue
+        .map((event) {
+      return event.snapshot.value.values.map<MessageVO>((element) {
+        return MessageVO.fromJson(
+          Map<String, dynamic>.from(element),
+        );
+      }).toList();
     });
   }
 }

@@ -9,10 +9,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wechat_redesign/blocs/chatting_bloc.dart';
-import 'package:wechat_redesign/dummy/dummy_data.dart';
-import 'package:wechat_redesign/dummy/message.dart';
+import 'package:wechat_redesign/data/vos/message_vo.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
+import 'package:wechat_redesign/viewitems/loading_view.dart';
 import 'package:wechat_redesign/viewitems/sender_profile_view.dart';
 
 class ConversationPage extends StatefulWidget {
@@ -24,165 +24,255 @@ class ConversationPage extends StatefulWidget {
 }
 
 class _ConversationPageState extends State<ConversationPage> {
-  _buildMessage(Message message, bool isMe) {
-    final Container msg = Container(
-      margin: isMe
-          ? const EdgeInsets.only(
-              top: 8.0,
-              bottom: 8.0,
-              left: 80.0,
-            )
-          : const EdgeInsets.only(
-              top: 8.0,
-              bottom: 8.0,
-            ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 25.0,
-        vertical: 10.0,
-      ),
-      width: MediaQuery.of(context).size.width * 0.75,
-      decoration: BoxDecoration(
-        color: CHAT_TEXT_BACKGROUND_COLOR,
-        borderRadius: BorderRadius.circular(
-          40.0,
-        ),
-      ),
-      child: Text(
-        message.text ?? "",
-        style: GoogleFonts.poppins(
-          textStyle: const TextStyle(
-            color: TEXT_COLOR_BOLD,
-            fontSize: TEXT_REGULAR,
-          ),
-        ),
-      ),
-    );
-    if (isMe) {
-      return msg;
-    }
-    return Row(
-      children: <Widget>[
-        const SenderProfileView(),
-        const SizedBox(
-          width: 3.0,
-        ),
-        msg,
-      ],
-    );
-  }
-
   bool isShow = false;
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ConversationBloc(widget.receiverId),
-      child: Scaffold(
-        backgroundColor: BACKGROUND_WHITE_COLOR,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          backgroundColor: PRIMARY_COLOR,
-          actions: [
-            Expanded(
-              child: Row(
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Padding(
+      child: Selector<ConversationBloc, bool>(
+        selector: (context,bloc) => bloc.isLoading,
+        builder: (context,isLoading,child)=>
+         Stack(
+           children: [
+             Scaffold(
+              backgroundColor: BACKGROUND_WHITE_COLOR,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                elevation: 0.0,
+                backgroundColor: PRIMARY_COLOR,
+                actions: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.only(
+                                  left: 10.0,
+                                ),
+                                child: Icon(
+                                  Icons.arrow_back_ios,
+                                  size: 28.0,
+                                  color: ADD_ICON_COLOR,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              "Wechat",
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  color: Color.fromRGBO(171, 239, 183, 1),
+                                  fontSize: TEXT_REGULAR_2XX,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        Text(
+                          "Amie Deane",
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: APP_TITLE_COLOR,
+                              fontSize: TEXT_REGULAR_2XX,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        const Spacer(),
+                        const Padding(
                           padding: EdgeInsets.only(
-                            left: 10.0,
+                            right: 10.0,
                           ),
                           child: Icon(
-                            Icons.arrow_back_ios,
+                            Icons.person_outline,
                             size: 28.0,
                             color: ADD_ICON_COLOR,
                           ),
                         ),
-                      ),
-                      Text(
-                        "Wechat",
-                        style: GoogleFonts.poppins(
-                          textStyle: const TextStyle(
-                            color: Color.fromRGBO(171, 239, 183, 1),
-                            fontSize: TEXT_REGULAR_2XX,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    "Amie Deane",
-                    style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: APP_TITLE_COLOR,
-                        fontSize: TEXT_REGULAR_2XX,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  const Spacer(),
-                  const Padding(
-                    padding: EdgeInsets.only(
-                      right: 10.0,
-                    ),
-                    child: Icon(
-                      Icons.person_outline,
-                      size: 28.0,
-                      color: ADD_ICON_COLOR,
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                reverse: true,
-                padding: const EdgeInsets.only(top: 15.0),
-                itemCount: messages.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Message message = messages[index];
-                  final bool isMe = message.sender?.id == currentUser.id;
-                  return _buildMessage(message, isMe);
-                },
+              body: Column(
+                children: [
+                  const Expanded(
+                    child: ConversationListSectionView(),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const ChosenFileView(),
+                      MessageComposerView(
+                        onTapAdd: () {
+                          setState(() {
+                            isShow = !isShow;
+                          });
+                        },
+                        isClose: isShow,
+                      ),
+                      Visibility(
+                        visible: isShow,
+                        child: const CategoryIconSectionView(),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const ChosenFileView(),
-                MessageComposerView(
-                  onTapAdd: () {
-                    setState(() {
-                      isShow = !isShow;
-                    });
-                  },
-                  isClose: isShow,
-                ),
-                Visibility(
-                  visible: isShow,
-                  child: const CategoryIconSectionView(),
-                ),
-              ],
-            )
-          ],
         ),
+             Visibility(
+               visible: isLoading,
+               child: Container(
+                 color: Colors.black12,
+                 child: const Center(
+                   child: LoadingView(),
+                 ),
+               ),
+             ),
+           ],
+         ),
       ),
     );
   }
 }
 
-class MessageComposerView extends StatelessWidget {
+class ConversationListSectionView extends StatefulWidget {
+  const ConversationListSectionView({Key? key}) : super(key: key);
+
+  @override
+  State<ConversationListSectionView> createState() =>
+      _ConversationListSectionViewState();
+}
+
+class _ConversationListSectionViewState
+    extends State<ConversationListSectionView> {
+  _buildMessage(MessageVO? message, bool isMe) {
+    final Container textMessage =
+        (message?.message == "" || message?.message == null)
+            ? Container()
+            : Container(
+                margin: isMe
+                    ? const EdgeInsets.only(
+                        top: 8.0,
+                        bottom: 8.0,
+                        left: 130.0,
+                      )
+                    : const EdgeInsets.only(
+                        top: 8.0,
+                        bottom: 8.0,
+                      ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25.0,
+                  vertical: 10.0,
+                ),
+                width: MediaQuery.of(context).size.width * 0.55,
+                decoration: BoxDecoration(
+                  color: CHAT_TEXT_BACKGROUND_COLOR,
+                  borderRadius: BorderRadius.circular(
+                    40.0,
+                  ),
+                ),
+                child: Text(
+                  message?.message ?? "",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      color: TEXT_COLOR_BOLD,
+                      fontSize: TEXT_REGULAR,
+                    ),
+                  ),
+                ),
+              );
+    final Container fileMessage = (message?.file == "" || message?.file == null)
+        ? Container()
+        : Container(
+            margin: isMe
+                ? const EdgeInsets.only(
+                    top: 8.0,
+                    bottom: 8.0,
+                    left: 130.0,
+                  )
+                : const EdgeInsets.only(
+                    top: 8.0,
+                    bottom: 8.0,
+                  ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 25.0,
+              vertical: 10.0,
+            ),
+            width: MediaQuery.of(context).size.width * 0.65,
+            child: (message?.isVideo == false)
+                ? Image.network("${message?.file}")
+                : FlickVideoPlayer(
+                    flickManager: FlickManager(
+                      videoPlayerController: VideoPlayerController.network(
+                        message?.file ?? "",
+                      ),
+                      autoPlay: false,
+                    ),
+                    flickVideoWithControls: const FlickVideoWithControls(
+                      closedCaptionTextStyle: TextStyle(
+                        fontSize: 8,
+                      ),
+                      controls: FlickPortraitControls(),
+                    ),
+                    flickVideoWithControlsFullscreen:
+                        const FlickVideoWithControls(
+                      controls: FlickLandscapeControls(),
+                    ),
+                  ),
+          );
+    if (isMe) {
+      return Column(
+        children: [
+          textMessage,
+          fileMessage,
+        ],
+      );
+    }
+    return Row(
+      children: <Widget>[
+        SenderProfileView(
+          profile: message?.profilePic,
+        ),
+        const SizedBox(
+          width: 3.0,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            textMessage,
+            fileMessage,
+          ],
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ConversationBloc>(
+      builder: (context, bloc, child) => ListView.builder(
+        reverse: true,
+        padding: const EdgeInsets.only(top: 15.0),
+        itemCount: bloc.conversationList?.length ?? 0,
+        itemBuilder: (BuildContext context, int index) {
+          final MessageVO? message = bloc.conversationList?[index];
+          final bool isMe = message?.userId == bloc.loginUser?.qrCode;
+          return _buildMessage(message, isMe);
+        },
+      ),
+    );
+  }
+}
+
+class MessageComposerView extends StatefulWidget {
   final Function onTapAdd;
   final bool isClose;
   const MessageComposerView(
@@ -190,10 +280,15 @@ class MessageComposerView extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<MessageComposerView> createState() => _MessageComposerViewState();
+}
+
+class _MessageComposerViewState extends State<MessageComposerView> {
+  TextEditingController controller = TextEditingController(text: "");
+  @override
   Widget build(BuildContext context) {
     return Consumer<ConversationBloc>(
-      builder: (context,bloc,child)=>
-       Container(
+      builder: (context, bloc, child) => Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 8.0,
           vertical: 5.0,
@@ -230,12 +325,15 @@ class MessageComposerView extends StatelessWidget {
                   ),
                 ),
                 child: TextField(
+                  controller: controller,
                   textCapitalization: TextCapitalization.sentences,
-                  onChanged: (value){
+                  onChanged: (value) {
                     bloc.onChangeMessage(value);
                   },
                   onSubmitted: (value) {
                     bloc.sendMessage(value);
+                    controller.clear();
+                   // bloc.onTapDeleteImage();
                   },
                   decoration: const InputDecoration(
                     hintText: 'Message ...',
@@ -251,11 +349,13 @@ class MessageComposerView extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: isClose ? const Icon(Icons.close) : const Icon(Icons.add),
+              icon: widget.isClose
+                  ? const Icon(Icons.close)
+                  : const Icon(Icons.add),
               iconSize: 30.0,
               color: MSG_COMPOSER_ICON_COLOR,
               onPressed: () {
-                onTapAdd();
+                widget.onTapAdd();
               },
             ),
           ],

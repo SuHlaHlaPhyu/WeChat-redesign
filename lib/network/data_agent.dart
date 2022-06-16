@@ -26,4 +26,5 @@ abstract class DataAgent {
 
   /// conversation
   Future<void> sendMessage(MessageVO message,String receiverId);
+  Stream<List<MessageVO>> getConversationsList(String userId);
 }

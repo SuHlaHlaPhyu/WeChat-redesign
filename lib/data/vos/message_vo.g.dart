@@ -13,6 +13,7 @@ MessageVO _$MessageVOFromJson(Map<String, dynamic> json) => MessageVO(
       profilePic: json['profile_pic'] as String?,
       timestamp: json['timestamp'] as String?,
       userId: json['user_id'] as String?,
+      isVideo: json['is_video'] as bool?,
     );
 
 Map<String, dynamic> _$MessageVOToJson(MessageVO instance) => <String, dynamic>{
@@ -22,4 +23,5 @@ Map<String, dynamic> _$MessageVOToJson(MessageVO instance) => <String, dynamic>{
       'profile_pic': instance.profilePic,
       'timestamp': instance.timestamp,
       'user_id': instance.userId,
+      'is_video': instance.isVideo,
     };

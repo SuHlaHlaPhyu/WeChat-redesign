@@ -25,5 +25,6 @@ abstract class DataModel {
   Stream<List<UserVO>> getContacts();
 
   /// conversation
-  Future<void> sendMessage(MessageVO message,String receiverId);
+  Future<void> sendMessage(MessageVO message,String receiverId,File? sentFile);
+  Stream<List<MessageVO>> getConversationsList(String userId);
 }
