@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wechat_redesign/pages/chatting/conversation_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
@@ -47,17 +48,17 @@ class WeChatFragment extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ConversationPage(
-                    receiverId: "",
+                    receiverId: "",receiverName: "",
                   )),
                 );
               },
             ),
-            const DividerView(),
-            const SubscriptionsSectionView(),
-            const DividerView(),
-            RecentConversationListSectionView(
-              onTap: (index) {},
-            )
+            // const DividerView(),
+            // const SubscriptionsSectionView(),
+            // const DividerView(),
+            // RecentConversationListSectionView(
+            //   onTap: (index) {},
+            // )
           ],
         ),
       ),
@@ -206,21 +207,50 @@ class SubscriptionItem extends StatelessWidget {
   }
 }
 
-class RecentConversationListSectionView extends StatelessWidget {
+class RecentConversationListSectionView extends StatefulWidget {
   final Function(int?) onTap;
   const RecentConversationListSectionView({Key? key, required this.onTap})
       : super(key: key);
 
+  @override
+  State<RecentConversationListSectionView> createState() => _RecentConversationListSectionViewState();
+}
+
+class _RecentConversationListSectionViewState extends State<RecentConversationListSectionView> {
+  void doNothing(BuildContext context){
+
+  }
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
-        return WechatSectionView(
-          onTap: () {
-            onTap(index);
-          },
+        return Slidable(
+          endActionPane: ActionPane(
+            motion: const ScrollMotion(),
+            children: [
+              SlidableAction(
+                // An action can be bigger than the others.
+                flex: 3,
+                onPressed: doNothing,
+                backgroundColor: ME_BACKGROUND_COLOR,
+                foregroundColor: MILD_BLUE,
+                icon: Icons.check_circle,
+              ),
+              SlidableAction(
+                onPressed: doNothing,
+                backgroundColor: ME_BACKGROUND_COLOR,
+                foregroundColor: VIVID_RED,
+                icon: Icons.cancel,
+              ),
+            ],
+          ),
+          child: WechatSectionView(
+            onTap: () {
+              widget.onTap(index);
+            },
+          ),
         );
       },
       separatorBuilder: (context, index) {

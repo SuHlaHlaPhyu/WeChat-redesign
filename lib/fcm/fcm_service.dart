@@ -1,7 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:wechat_redesign/blocs/sign_up_bloc.dart';
 
 const localNotificationChannel = "high_importance_channel";
 const localNotificationChannelTitle = "High Importance Notifications";
@@ -42,9 +43,12 @@ class FCMService {
 
     await initFlutterLocalNotification();
     await registerChannel();
-    SignUpBloc bloc = SignUpBloc();
 
     messaging.getToken().then((fcmToken) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid.toString())
+          .update({'fcm_token': fcmToken});
       debugPrint("FCM Token for Device ======> $fcmToken");
     });
 

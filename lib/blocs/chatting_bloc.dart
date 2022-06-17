@@ -5,8 +5,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:wechat_redesign/data/models/data_model.dart';
 import 'package:wechat_redesign/data/models/data_model_impl.dart';
+import 'package:wechat_redesign/data/vos/chat_history_vo.dart';
 import 'package:wechat_redesign/data/vos/message_vo.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
+import 'package:wechat_redesign/network/data_agent.dart';
+import 'package:wechat_redesign/network/data_agent_impl.dart';
 
 class ConversationBloc extends ChangeNotifier {
   PlatformFile? chosenFile;
@@ -22,8 +25,12 @@ class ConversationBloc extends ChangeNotifier {
   bool isLoading = false;
 
   DataModel dataModel = DataModelImpl();
+  DataAgent dataAgent = DataAgentImpl();
 
   ConversationBloc(String? receiverId) {
+    dataAgent.chatHistory().listen((event) {
+      print("========> bloc $event");
+    });
     receiverUserId = receiverId;
     loginUser = dataModel.getLogInUser();
     _notifySafely();

@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:wechat_redesign/data/vos/chat_history_vo.dart';
 import 'package:wechat_redesign/data/vos/message_vo.dart';
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
@@ -144,6 +146,17 @@ class DataAgentImpl extends DataAgent {
         .first;
   }
 
+  Stream<UserVO> getUserByIDStream(String? qr) {
+    return fireStore
+        .collection(usersCollection)
+        .doc(qr.toString())
+        .get()
+        .asStream()
+        .where((event) => event.data() != null)
+        .map((event) =>
+            UserVO.fromJson(Map<String, dynamic>.from(event.data()!)));
+  }
+
   @override
   UserVO getLogInUser() {
     return UserVO(
@@ -217,6 +230,65 @@ class DataAgentImpl extends DataAgent {
         return MessageVO.fromJson(
           Map<String, dynamic>.from(element),
         );
+      }).toList();
+    });
+  }
+
+  //@override
+  // Stream<Map<String,dynamic>> chatHistory(){
+  //   return databaseRef.child(contactsAndMessages).child(auth.currentUser?.uid ?? "").onValue.map((event) {
+  //     Map<String, dynamic> data = jsonDecode(jsonEncode(event.snapshot.value));
+  //     data.keys.map((contactUserID) {
+  //       getUserByID(contactUserID).then((contact) {
+  //         print("=====> contact ${contact.name}");
+  //         getConversationsList(contactUserID).listen((event) {
+  //           print("======> message ${event.last.message}");
+  //         });
+  //       });
+  //     }).toList();
+  //     return data;
+  //   });
+  // }
+  // @override
+  // Stream<List<ChatHistoryVO>> chatHistory() {
+  //   List<ChatHistoryVO> result = [];
+  //   return databaseRef
+  //       .child(contactsAndMessages)
+  //       .child(auth.currentUser?.uid ?? "")
+  //       .onValue
+  //       .map((event) {
+  //     Map<String, dynamic> data = jsonDecode(jsonEncode(event.snapshot.value));
+  //     data.keys.map((contactUserID) {
+  //      getUserByID(contactUserID).then((contact) {
+  //         getConversationsList(contactUserID).listen((event) {
+  //           result.add(ChatHistoryVO(
+  //               chatContact: contact, lastMessage: event.last.message));
+  //           print("======> result in loop $result");
+  //         });
+  //       });
+  //     }).toList();
+  //     print("======> result $result");
+  //     return result;
+  //   });
+  // }
+  @override
+  Stream<List<ChatHistoryVO>> chatHistory() {
+    return databaseRef
+        .child(contactsAndMessages)
+        .child(auth.currentUser?.uid ?? "")
+        .onValue
+        .map((event) {
+      Map<String, dynamic> data = jsonDecode(jsonEncode(event.snapshot.value));
+     return data.keys.map((contactUserID) {
+       UserVO? userVO; String? msg;
+       getUserByID(contactUserID).then((value) {
+         userVO = value;
+         print("====> $userVO");
+       }).whenComplete(() => getConversationsList(contactUserID).listen((event) {
+         msg = event.last.message;
+         print("======> $msg");
+       }));
+       return ChatHistoryVO(chatContact: userVO,lastMessage: msg);
       }).toList();
     });
   }

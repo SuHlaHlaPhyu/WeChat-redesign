@@ -1,3 +1,4 @@
+import 'package:alphabet_list_scroll_view/alphabet_list_scroll_view.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -83,6 +84,25 @@ class ContactsListSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // return Consumer<ContactsBloc>(
+    //   builder: (context, bloc, child) => SizedBox(
+    //     height: 300,
+    //     child: AlphabetListScrollView(
+    //       strList: bloc.contactsList?.map((e) => e.name ?? "").toList() ?? [],
+    //       highlightTextStyle: const TextStyle(
+    //         color: Colors.green,
+    //       ),
+    //       showPreview: true,
+    //       itemBuilder: (context, index) {
+    //         return Text(bloc.contactsList?[index].name ?? "");
+    //       },
+    //       indexedHeight: (i) {
+    //         return 80;
+    //       },
+    //       keyboardUsage: true,
+    //     ),
+    //   ),
+    // );
     return Consumer<ContactsBloc>(
       builder: (context, bloc, child) => ListView.separated(
         shrinkWrap: true,
@@ -108,10 +128,15 @@ class ContactItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>ConversationPage(receiverId: contact?.qrCode,)),
+          MaterialPageRoute(
+            builder: (context) => ConversationPage(
+              receiverId: contact?.qrCode,
+              receiverName: contact?.name,
+            ),
+          ),
         );
       },
       child: Container(
@@ -178,45 +203,49 @@ class DividerSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: BACKGROUND_COLOR,
-      child: Column(
-        children: [
-          const Divider(
-            height: 3.0,
-            thickness: 5.0,
-          ),
-          Container(
-            height: MARGIN_XXLARGE,
-            padding: const EdgeInsets.fromLTRB(80, 17, 15, 3),
-            child: Row(
-              children: [
-                Text(
-                  "A",
-                  style: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                        color: SUBTEXT_COLOR,
-                        fontSize: TEXT_REGULAR_3X,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  "15 FRIENDS",
-                  style: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                      color: ICON_COLOR,
-                      fontSize: TEXT_SMALL,
+    return Consumer<ContactsBloc>(
+      builder: (context, bloc, child)=>
+       Container(
+        color: BACKGROUND_COLOR,
+        child: Column(
+          children: [
+            const Divider(
+              height: 3.0,
+              thickness: 5.0,
+            ),
+            Container(
+              height: MARGIN_XXLARGE,
+              padding: const EdgeInsets.fromLTRB(80, 17, 15, 3),
+              child: Row(
+                children: [
+                  // Text(
+                  //   "A",
+                  //   style: GoogleFonts.poppins(
+                  //     textStyle: const TextStyle(
+                  //         color: SUBTEXT_COLOR,
+                  //         fontSize: TEXT_REGULAR_3X,
+                  //         fontWeight: FontWeight.bold),
+                  //   ),
+                  // ),
+                  const Spacer(),
+                  Text(
+                    "${bloc.contactsList?.length} FRIENDS",
+                    style: GoogleFonts.poppins(
+                      textStyle: const TextStyle(
+                        color: ICON_COLOR,
+                        fontSize: TEXT_SMALL,
+                        fontWeight: FontWeight.bold
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const Divider(
-            height: 2.0,
-          ),
-        ],
+            const Divider(
+              height: 2.0,
+            ),
+          ],
+        ),
       ),
     );
   }

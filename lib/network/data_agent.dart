@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:wechat_redesign/data/vos/chat_history_vo.dart';
 import 'package:wechat_redesign/data/vos/message_vo.dart';
 import 'package:wechat_redesign/data/vos/moment_vo.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
 
 
 abstract class DataAgent {
+  /// moments
   Stream<List<MomentVO>> getMoments();
   Future<void> addNewMoment(MomentVO post);
   Future<void> deleteMoment(int postId);
@@ -27,4 +29,7 @@ abstract class DataAgent {
   /// conversation
   Future<void> sendMessage(MessageVO message,String receiverId);
   Stream<List<MessageVO>> getConversationsList(String userId);
+
+  /// chat history
+  Stream<List<ChatHistoryVO>> chatHistory();
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -243,23 +244,36 @@ class TextFieldView extends StatelessWidget {
                 ),
                 SizedBox(
                   width: 250.0,
-                  child: TextField(
-                    // controller: TextEditingController(text: bloc.region),
-                    onChanged: (text) {
-                      //
-                      bloc.selectRegion(text);
+                  child: CountryCodePicker(
+                    onChanged: (code){
+                      bloc.selectRegion(code.name.toString());
                     },
-                    style: const TextStyle(
-                      color: Colors.white,
-                    ),
-                    decoration: const InputDecoration(
-                      hintText: "What's your region?",
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(
-                        color: SUBTEXT_COLOR,
-                      ),
+                    initialSelection: 'IT',
+                    favorite: ['+39','FR'],
+                    showCountryOnly: false,
+                    showOnlyCountryWhenClosed: false,
+                    alignLeft: true,
+                    textStyle:const TextStyle(
+                      color: Colors.white
                     ),
                   ),
+                  // TextField(
+                  //   // controller: TextEditingController(text: bloc.region),
+                  //   onChanged: (text) {
+                  //     //
+                  //     bloc.selectRegion(text);
+                  //   },
+                  //   style: const TextStyle(
+                  //     color: Colors.white,
+                  //   ),
+                  //   decoration: const InputDecoration(
+                  //     hintText: "What's your region?",
+                  //     border: InputBorder.none,
+                  //     hintStyle: TextStyle(
+                  //       color: SUBTEXT_COLOR,
+                  //     ),
+                  //   ),
+                  // ),
                 ),
               ],
             ),

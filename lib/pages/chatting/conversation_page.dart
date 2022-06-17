@@ -17,7 +17,8 @@ import 'package:wechat_redesign/viewitems/sender_profile_view.dart';
 
 class ConversationPage extends StatefulWidget {
   final String? receiverId;
-  const ConversationPage({Key? key, required this.receiverId})
+  final String? receiverName;
+  const ConversationPage({Key? key, required this.receiverId,required this.receiverName})
       : super(key: key);
   @override
   _ConversationPageState createState() => _ConversationPageState();
@@ -75,7 +76,7 @@ class _ConversationPageState extends State<ConversationPage> {
                         ),
                         const Spacer(),
                         Text(
-                          "Amie Deane",
+                          widget.receiverName ?? "",
                           style: GoogleFonts.poppins(
                             textStyle: const TextStyle(
                               fontWeight: FontWeight.w600,
