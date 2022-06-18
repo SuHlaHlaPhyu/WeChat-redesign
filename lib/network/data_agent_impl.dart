@@ -134,6 +134,7 @@ class DataAgentImpl extends DataAgent {
             UserVO.fromJson(Map<String, dynamic>.from(event.data()!)));
   }
 
+  @override
   Future<UserVO> getUserByID(String? qr) {
     return fireStore
         .collection(usersCollection)
@@ -234,6 +235,15 @@ class DataAgentImpl extends DataAgent {
     });
   }
 
+  @override
+  Stream<List<String>> chatHistory() {
+    return databaseRef.child(contactsAndMessages).child(auth.currentUser?.uid ?? "").onValue.map((event) {
+      Map<String, dynamic> data = jsonDecode(jsonEncode(event.snapshot.value));
+      return data.keys.map((e) => e).toList();
+    });
+  }
+
+
   //@override
   // Stream<Map<String,dynamic>> chatHistory(){
   //   return databaseRef.child(contactsAndMessages).child(auth.currentUser?.uid ?? "").onValue.map((event) {
@@ -271,25 +281,60 @@ class DataAgentImpl extends DataAgent {
   //     return result;
   //   });
   // }
-  @override
-  Stream<List<ChatHistoryVO>> chatHistory() {
-    return databaseRef
-        .child(contactsAndMessages)
-        .child(auth.currentUser?.uid ?? "")
-        .onValue
-        .map((event) {
-      Map<String, dynamic> data = jsonDecode(jsonEncode(event.snapshot.value));
-     return data.keys.map((contactUserID) {
-       UserVO? userVO; String? msg;
-       getUserByID(contactUserID).then((value) {
-         userVO = value;
-         print("====> $userVO");
-       }).whenComplete(() => getConversationsList(contactUserID).listen((event) {
-         msg = event.last.message;
-         print("======> $msg");
-       }));
-       return ChatHistoryVO(chatContact: userVO,lastMessage: msg);
-      }).toList();
-    });
-  }
+  // @override
+  // Future<List<ChatHistoryVO>> chatHistory() async {
+  //   UserVO? userVO;
+  //   String? msg;
+  //   List<ChatHistoryVO> myList = [];
+  //   return await databaseRef
+  //       .child(contactsAndMessages)
+  //       .child(auth.currentUser?.uid ?? "")
+  //       .onValue
+  //       .first
+  //       .then((event) async {
+  //     Map<String, dynamic> data = await jsonDecode(jsonEncode(event.snapshot.value));
+  //    data.keys.map((contactUserID) async {
+  //       UserVO? userVOTemp;
+  //       String? msgTemp;
+  //       await getUserByID(contactUserID).then((value){
+  //         userVOTemp = value;
+  //         print("====> $userVOTemp");
+  //       });
+  //       await getConversationsList(contactUserID).first.then((event){
+  //         msgTemp = event.last.message;
+  //         print("======> $msgTemp");
+  //       });
+  //       userVO = userVOTemp;
+  //       msg = msgTemp;
+  //       myList.add(ChatHistoryVO(chatContact: userVO, lastMessage: msg));
+  //     }).toList();
+  //     return myList;
+  //   });
+  // }
+
+  // @override
+  // Future<List<ChatHistoryVO>> chatHistory() async {
+  //   UserVO? userVO;
+  //   String? msg;
+  //   List<ChatHistoryVO> myList = [];
+  //   final mRef = await databaseRef
+  //       .child(contactsAndMessages)
+  //       .child(auth.currentUser?.uid ?? "");
+  //   mRef.onValue.map((event) async {
+  //     Map<String, dynamic> data = jsonDecode(jsonEncode(event.snapshot.value));
+  //     data.keys.map((e) async {
+  //       UserVO? userVOTemp;
+  //       String? msgTemp;
+  //       await getUserByID(e)
+  //           .then((value) => userVOTemp = value);
+  //        await getConversationsList(e).first.then((event) {
+  //                 msgTemp = event.last.message;
+  //               });
+  //       userVO= userVOTemp; msg = msgTemp;
+  //     myList.add(ChatHistoryVO(chatContact: userVO,lastMessage: msg));
+  //     print("=======> $myList");
+  //     }).toList();
+  //   });
+  //   return myList;
+  // }
 }

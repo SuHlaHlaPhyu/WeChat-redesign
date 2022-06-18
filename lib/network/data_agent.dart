@@ -21,6 +21,7 @@ abstract class DataAgent {
   bool isLoggedIn();
   Stream<UserVO> getLoggedInUser();
   UserVO getLogInUser();
+  Future<UserVO> getUserByID(String? qr);
 
   /// contact
   Future addToContact(String qrCode);
@@ -31,5 +32,5 @@ abstract class DataAgent {
   Stream<List<MessageVO>> getConversationsList(String userId);
 
   /// chat history
-  Stream<List<ChatHistoryVO>> chatHistory();
+  Stream<List<String>> chatHistory();
 }

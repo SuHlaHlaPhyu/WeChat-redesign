@@ -25,12 +25,8 @@ class ConversationBloc extends ChangeNotifier {
   bool isLoading = false;
 
   DataModel dataModel = DataModelImpl();
-  DataAgent dataAgent = DataAgentImpl();
 
   ConversationBloc(String? receiverId) {
-    dataAgent.chatHistory().listen((event) {
-      print("========> bloc $event");
-    });
     receiverUserId = receiverId;
     loginUser = dataModel.getLogInUser();
     _notifySafely();

@@ -256,6 +256,10 @@ class TextFieldView extends StatelessWidget {
                     textStyle:const TextStyle(
                       color: Colors.white
                     ),
+                    // dialogBackgroundColor: AUTH_BACKGROUND_COLOR,
+                    // dialogTextStyle: const TextStyle(
+                    //     color: Colors.white
+                    // ),
                   ),
                   // TextField(
                   //   // controller: TextEditingController(text: bloc.region),

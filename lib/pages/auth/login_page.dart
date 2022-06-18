@@ -120,7 +120,7 @@ class ContinueButton extends StatelessWidget {
             height: 45.0,
             width: 220.0,
             decoration: BoxDecoration(
-              color: const Color.fromRGBO(43, 43, 43, 1),
+              color: SIGN_UP_COLOR,
               borderRadius: BorderRadius.circular(
                 8.0,
               ),
@@ -130,7 +130,7 @@ class ContinueButton extends StatelessWidget {
                 "Accept and Login",
                 style: GoogleFonts.poppins(
                   textStyle: const TextStyle(
-                    color: SUBTEXT_COLOR,
+                    color: Colors.white,
                     fontSize: MARGIN_MEDIUM_2,
                   ),
                 ),

@@ -2,6 +2,10 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wechat_redesign/blocs/chat_history_bloc.dart';
+import 'package:wechat_redesign/data/vos/message_vo.dart';
+import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/pages/chatting/conversation_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
@@ -13,53 +17,59 @@ class WeChatFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: BACKGROUND_COLOR,
-      appBar: AppBar(
-        elevation: 0.0,
-        title: Text(
-          "WeChat",
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              color: APP_TITLE_COLOR,
-              fontSize: TEXT_REGULAR_2XX,
+    return ChangeNotifierProvider(
+      create: (context) => ChatHistoryBloc(),
+      child: Scaffold(
+        backgroundColor: BACKGROUND_COLOR,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          title: Text(
+            "WeChat",
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                color: APP_TITLE_COLOR,
+                fontSize: TEXT_REGULAR_2XX,
+              ),
             ),
           ),
-        ),
-        backgroundColor: PRIMARY_COLOR,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(
-              right: 10.0,
+          backgroundColor: PRIMARY_COLOR,
+          actions: const [
+            Padding(
+              padding: EdgeInsets.only(
+                right: 10.0,
+              ),
+              child: Icon(
+                Icons.add,
+                size: 28.0,
+                color: ADD_ICON_COLOR,
+              ),
             ),
-            child: Icon(
-              Icons.add,
-              size: 28.0,
-              color: ADD_ICON_COLOR,
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            RecentConversationListSectionView(
-              onTap: (index) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ConversationPage(
-                    receiverId: "",receiverName: "",
-                  )),
-                );
-              },
-            ),
-            // const DividerView(),
-            // const SubscriptionsSectionView(),
-            // const DividerView(),
-            // RecentConversationListSectionView(
-            //   onTap: (index) {},
-            // )
           ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              RecentConversationListSectionView(
+                onTap: (index) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ConversationPage(
+                              receiverId: "",
+                              receiverName: "",
+                            )),
+                  );
+                },
+              ),
+              // const DividerView(),
+              // const SubscriptionsSectionView(),
+              // const DividerView(),
+              // RecentConversationListSectionView(
+              //   onTap: (index) {},
+              // )
+            ],
+          ),
         ),
       ),
     );
@@ -116,10 +126,11 @@ class SubscriptionsSectionView extends StatelessWidget {
               ),
               Text(
                 "SUBSCRIPTIONS",
-                style: GoogleFonts.poppins(textStyle: const TextStyle(
-                    color: SUBTEXT_COLOR,
-                    fontWeight: FontWeight.bold,
-                    fontSize: TEXT_REGULAR_2X)),
+                style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                        color: SUBTEXT_COLOR,
+                        fontWeight: FontWeight.bold,
+                        fontSize: TEXT_REGULAR_2X)),
               ),
               const Spacer(),
               const Icon(
@@ -163,21 +174,24 @@ class SubscriptionItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
-            children:[
+            children: [
               Text(
                 "Tecent Official",
-                style: GoogleFonts.poppins(textStyle: const TextStyle(
-                    color: TEXT_COLOR_BOLD,
-                    fontWeight: FontWeight.bold,
-                    fontSize: TEXT_REGULAR_2X)),
+                style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                        color: TEXT_COLOR_BOLD,
+                        fontWeight: FontWeight.bold,
+                        fontSize: TEXT_REGULAR_2X)),
               ),
-             const Spacer(),
+              const Spacer(),
               Text(
                 "12:10 PM",
-                style: GoogleFonts.poppins(textStyle: const TextStyle(
-                  color: SUBTEXT_TIME_COLOR,
-                  fontSize: TEXT_SMALL,
-                ),),
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                    color: SUBTEXT_TIME_COLOR,
+                    fontSize: TEXT_SMALL,
+                  ),
+                ),
               )
             ],
           ),
@@ -186,7 +200,8 @@ class SubscriptionItem extends StatelessWidget {
           ),
           Text(
             "WeChat is now available in India.",
-            style: GoogleFonts.poppins(textStyle:const  TextStyle(
+            style: GoogleFonts.poppins(
+                textStyle: const TextStyle(
               color: TEXT_COLOR_BOLD,
               fontSize: TEXT_SMALL,
             )),
@@ -196,10 +211,12 @@ class SubscriptionItem extends StatelessWidget {
           ),
           Text(
             "I'm stuck with that. Can't believe it. Do we have to do with that stuck later?",
-            style: GoogleFonts.poppins(textStyle: const  TextStyle(
-              color: SUBTEXT_COLOR,
-              fontSize: TEXT_SMALL,
-            ),),
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                color: SUBTEXT_COLOR,
+                fontSize: TEXT_SMALL,
+              ),
+            ),
           )
         ],
       ),
@@ -207,65 +224,64 @@ class SubscriptionItem extends StatelessWidget {
   }
 }
 
-class RecentConversationListSectionView extends StatefulWidget {
+class RecentConversationListSectionView extends StatelessWidget {
   final Function(int?) onTap;
   const RecentConversationListSectionView({Key? key, required this.onTap})
       : super(key: key);
 
-  @override
-  State<RecentConversationListSectionView> createState() => _RecentConversationListSectionViewState();
-}
-
-class _RecentConversationListSectionViewState extends State<RecentConversationListSectionView> {
-  void doNothing(BuildContext context){
-
-  }
+  void doNothing(BuildContext context) {}
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return Slidable(
-          endActionPane: ActionPane(
-            motion: const ScrollMotion(),
-            children: [
-              SlidableAction(
-                // An action can be bigger than the others.
-                flex: 3,
-                onPressed: doNothing,
-                backgroundColor: ME_BACKGROUND_COLOR,
-                foregroundColor: MILD_BLUE,
-                icon: Icons.check_circle,
-              ),
-              SlidableAction(
-                onPressed: doNothing,
-                backgroundColor: ME_BACKGROUND_COLOR,
-                foregroundColor: VIVID_RED,
-                icon: Icons.cancel,
-              ),
-            ],
-          ),
-          child: WechatSectionView(
-            onTap: () {
-              widget.onTap(index);
-            },
-          ),
-        );
-      },
-      separatorBuilder: (context, index) {
-        return const Divider(
-          height: 1,
-        );
-      },
-      itemCount: 4,
+    return Consumer<ChatHistoryBloc>(
+      builder: (context, bloc, child) => ListView.separated(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          return Slidable(
+            endActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              children: [
+                SlidableAction(
+                  // An action can be bigger than the others.
+                  flex: 3,
+                  onPressed: doNothing,
+                  backgroundColor: ME_BACKGROUND_COLOR,
+                  foregroundColor: MILD_BLUE,
+                  icon: Icons.check_circle,
+                ),
+                SlidableAction(
+                  onPressed: doNothing,
+                  backgroundColor: ME_BACKGROUND_COLOR,
+                  foregroundColor: VIVID_RED,
+                  icon: Icons.cancel,
+                ),
+              ],
+            ),
+            child: WechatSectionView(
+              message: bloc.msgList[index],
+              userVO: bloc.chatUser[index],
+              onTap: () {
+                onTap(index);
+              },
+            ),
+          );
+        },
+        separatorBuilder: (context, index) {
+          return const Divider(
+            height: 1,
+          );
+        },
+        itemCount: bloc.chatUser.length,
+      ),
     );
   }
 }
 
 class WechatSectionView extends StatelessWidget {
+  final UserVO? userVO;
+  final List<MessageVO>? message;
   final Function onTap;
-  const WechatSectionView({Key? key, required this.onTap}) : super(key: key);
+  const WechatSectionView({Key? key, required this.onTap,required this.userVO,required this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -289,13 +305,17 @@ class WechatSectionView extends StatelessWidget {
                 height: 75,
               ),
             ),
-            const ProfileImageView(
-              profile: "https://i.pinimg.com/736x/75/8f/57/758f57fe8f91f684be6059b632bee2c0.jpg",
+            ProfileImageView(
+              profile:
+                  userVO?.profile ?? "",
             ),
             const SizedBox(
               width: MARGIN_MEDIUM,
             ),
-            const WechatItem(),
+            WechatItem(
+              contact: userVO,
+              message: message,
+            ),
           ],
         ),
       ),
@@ -304,8 +324,12 @@ class WechatSectionView extends StatelessWidget {
 }
 
 class WechatItem extends StatelessWidget {
+  final UserVO? contact;
+  final List<MessageVO>? message;
   const WechatItem({
     Key? key,
+    required this.contact,
+    required this.message
   }) : super(key: key);
 
   @override
@@ -318,7 +342,7 @@ class WechatItem extends StatelessWidget {
           Row(
             children: [
               Text(
-                "Amie Deane",
+                contact?.name ?? "",
                 style: GoogleFonts.poppins(
                   textStyle: const TextStyle(
                     color: TEXT_COLOR_BOLD,
@@ -343,7 +367,7 @@ class WechatItem extends StatelessWidget {
             height: MARGIN_SMALL,
           ),
           Text(
-            "I'm stuck with that. Can't believe it. Do we have to do with that stuck later?",
+            message?.last.message ?? "",
             style: GoogleFonts.poppins(
               textStyle: const TextStyle(
                 color: SUBTEXT_COLOR,

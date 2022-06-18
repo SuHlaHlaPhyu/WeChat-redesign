@@ -24,6 +24,7 @@ class ContactsFragment extends StatelessWidget {
         builder: (context, isLoading, child) => Scaffold(
           backgroundColor: BACKGROUND_WHITE_COLOR,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             elevation: 0.0,
             title: Text(
               "Contacts",
