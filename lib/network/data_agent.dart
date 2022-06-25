@@ -33,4 +33,6 @@ abstract class DataAgent {
 
   /// chat history
   Stream<List<String>> chatHistory();
+  Stream<String> getConversationsLastMessage(String userId);
+  Future<void> deleteConversation(String contactId);
 }

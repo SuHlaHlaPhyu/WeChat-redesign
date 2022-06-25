@@ -85,38 +85,23 @@ class ContactsListSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Consumer<ContactsBloc>(
-    //   builder: (context, bloc, child) => SizedBox(
-    //     height: 300,
-    //     child: AlphabetListScrollView(
-    //       strList: bloc.contactsList?.map((e) => e.name ?? "").toList() ?? [],
-    //       highlightTextStyle: const TextStyle(
-    //         color: Colors.green,
-    //       ),
-    //       showPreview: true,
-    //       itemBuilder: (context, index) {
-    //         return Text(bloc.contactsList?[index].name ?? "");
-    //       },
-    //       indexedHeight: (i) {
-    //         return 80;
-    //       },
-    //       keyboardUsage: true,
-    //     ),
-    //   ),
-    // );
     return Consumer<ContactsBloc>(
-      builder: (context, bloc, child) => ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          return ContactItem(
-            contact: bloc.contactsList?[index],
-          );
-        },
-        separatorBuilder: (context, index) {
-          return const Divider();
-        },
-        itemCount: bloc.contactsList?.length ?? 0,
+      builder: (context, bloc, child) => SizedBox(
+        height: 600,
+        child: AlphabetListScrollView(
+          strList: bloc.contactsList?.map((e) => e.name ?? "").toList() ?? [],
+          highlightTextStyle: const TextStyle(
+            color: Colors.green,
+          ),
+          showPreview: true,
+          itemBuilder: (context, index) {
+            return ContactItem(contact: bloc.contactsList?[index]);
+          },
+          indexedHeight: (i) {
+            return 80;
+          },
+          keyboardUsage: true,
+        ),
       ),
     );
   }
@@ -205,8 +190,7 @@ class DividerSectionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ContactsBloc>(
-      builder: (context, bloc, child)=>
-       Container(
+      builder: (context, bloc, child) => Container(
         color: BACKGROUND_COLOR,
         child: Column(
           children: [
@@ -233,10 +217,9 @@ class DividerSectionView extends StatelessWidget {
                     "${bloc.contactsList?.length} FRIENDS",
                     style: GoogleFonts.poppins(
                       textStyle: const TextStyle(
-                        color: ICON_COLOR,
-                        fontSize: TEXT_SMALL,
-                        fontWeight: FontWeight.bold
-                      ),
+                          color: ICON_COLOR,
+                          fontSize: TEXT_SMALL,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

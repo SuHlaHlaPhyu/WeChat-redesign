@@ -18,7 +18,8 @@ import 'package:wechat_redesign/viewitems/sender_profile_view.dart';
 class ConversationPage extends StatefulWidget {
   final String? receiverId;
   final String? receiverName;
-  const ConversationPage({Key? key, required this.receiverId,required this.receiverName})
+  const ConversationPage(
+      {Key? key, required this.receiverId, required this.receiverName})
       : super(key: key);
   @override
   _ConversationPageState createState() => _ConversationPageState();
@@ -31,11 +32,10 @@ class _ConversationPageState extends State<ConversationPage> {
     return ChangeNotifierProvider(
       create: (context) => ConversationBloc(widget.receiverId),
       child: Selector<ConversationBloc, bool>(
-        selector: (context,bloc) => bloc.isLoading,
-        builder: (context,isLoading,child)=>
-         Stack(
-           children: [
-             Scaffold(
+        selector: (context, bloc) => bloc.isLoading,
+        builder: (context, isLoading, child) => Stack(
+          children: [
+            Scaffold(
               backgroundColor: BACKGROUND_WHITE_COLOR,
               appBar: AppBar(
                 automaticallyImplyLeading: false,
@@ -127,18 +127,18 @@ class _ConversationPageState extends State<ConversationPage> {
                   ),
                 ],
               ),
+            ),
+            Visibility(
+              visible: isLoading,
+              child: Container(
+                color: Colors.black12,
+                child: const Center(
+                  child: LoadingView(),
+                ),
+              ),
+            ),
+          ],
         ),
-             Visibility(
-               visible: isLoading,
-               child: Container(
-                 color: Colors.black12,
-                 child: const Center(
-                   child: LoadingView(),
-                 ),
-               ),
-             ),
-           ],
-         ),
       ),
     );
   }
@@ -159,37 +159,37 @@ class _ConversationListSectionViewState
         (message?.message == "" || message?.message == null)
             ? Container()
             : Container(
-                margin: isMe
-                    ? const EdgeInsets.only(
-                        top: 8.0,
-                        bottom: 8.0,
-                        left: 130.0,
-                      )
-                    : const EdgeInsets.only(
-                        top: 8.0,
-                        bottom: 8.0,
-                      ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25.0,
-                  vertical: 10.0,
-                ),
-                width: MediaQuery.of(context).size.width * 0.55,
-                decoration: BoxDecoration(
-                  color: CHAT_TEXT_BACKGROUND_COLOR,
-                  borderRadius: BorderRadius.circular(
-                    40.0,
-                  ),
-                ),
-                child: Text(
-                  message?.message ?? "",
-                  style: GoogleFonts.poppins(
-                    textStyle: const TextStyle(
-                      color: TEXT_COLOR_BOLD,
-                      fontSize: TEXT_REGULAR,
+              margin: isMe
+                  ? const EdgeInsets.only(
+                      top: 8.0,
+                      bottom: 8.0,
+                      left: 200.0,
+                    )
+                  : const EdgeInsets.only(
+                      top: 8.0,
+                      bottom: 8.0,
                     ),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 25.0,
+                vertical: 10.0,
+              ),
+              width: MediaQuery.of(context).size.width * 0.50,
+              decoration: BoxDecoration(
+                color: CHAT_TEXT_BACKGROUND_COLOR,
+                borderRadius: BorderRadius.circular(
+                  40.0,
+                ),
+              ),
+              child: Text(
+                message?.message ?? "",
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                    color: TEXT_COLOR_BOLD,
+                    fontSize: TEXT_REGULAR,
                   ),
                 ),
-              );
+              ),
+            );
     final Container fileMessage = (message?.file == "" || message?.file == null)
         ? Container()
         : Container(
@@ -334,7 +334,7 @@ class _MessageComposerViewState extends State<MessageComposerView> {
                   onSubmitted: (value) {
                     bloc.sendMessage(value);
                     controller.clear();
-                   // bloc.onTapDeleteImage();
+                    // bloc.onTapDeleteImage();
                   },
                   decoration: const InputDecoration(
                     hintText: 'Message ...',

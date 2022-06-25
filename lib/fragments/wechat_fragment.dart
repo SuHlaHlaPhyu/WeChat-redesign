@@ -4,12 +4,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_redesign/blocs/chat_history_bloc.dart';
-import 'package:wechat_redesign/data/vos/message_vo.dart';
-import 'package:wechat_redesign/data/vos/user_vo.dart';
 import 'package:wechat_redesign/pages/chatting/conversation_page.dart';
 import 'package:wechat_redesign/resources/colors.dart';
 import 'package:wechat_redesign/resources/dimens.dart';
+import 'package:wechat_redesign/viewitems/loading_view.dart';
 
+import '../data/vos/chat_history_vo.dart';
 import '../viewitems/profile_image_view.dart';
 
 class WeChatFragment extends StatelessWidget {
@@ -19,57 +19,60 @@ class WeChatFragment extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ChatHistoryBloc(),
-      child: Scaffold(
-        backgroundColor: BACKGROUND_COLOR,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          elevation: 0.0,
-          title: Text(
-            "WeChat",
-            style: GoogleFonts.poppins(
-              textStyle: const TextStyle(
-                color: APP_TITLE_COLOR,
-                fontSize: TEXT_REGULAR_2XX,
+      child: Selector<ChatHistoryBloc, bool>(
+        selector: (context, bloc) => bloc.isLoading,
+        shouldRebuild: (prev, next) => prev != next,
+        builder: (context, isLoading, child) => Stack(
+          children: [
+            Scaffold(
+              backgroundColor: BACKGROUND_COLOR,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                elevation: 0.0,
+                title: Text(
+                  "WeChat",
+                  style: GoogleFonts.poppins(
+                    textStyle: const TextStyle(
+                      color: APP_TITLE_COLOR,
+                      fontSize: TEXT_REGULAR_2XX,
+                    ),
+                  ),
+                ),
+                backgroundColor: PRIMARY_COLOR,
+                actions: const [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      right: 10.0,
+                    ),
+                    child: Icon(
+                      Icons.add,
+                      size: 28.0,
+                      color: ADD_ICON_COLOR,
+                    ),
+                  ),
+                ],
+              ),
+              body: SingleChildScrollView(
+                child: Column(
+                  children: const [
+                    RecentConversationListSectionView(),
+                    DividerView(),
+                    SubscriptionsSectionView(),
+                    DividerView(),
+                  ],
+                ),
               ),
             ),
-          ),
-          backgroundColor: PRIMARY_COLOR,
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(
-                right: 10.0,
-              ),
-              child: Icon(
-                Icons.add,
-                size: 28.0,
-                color: ADD_ICON_COLOR,
+            Visibility(
+              visible: isLoading,
+              child: Container(
+                color: Colors.black12,
+                child: const Center(
+                  child: LoadingView(),
+                ),
               ),
             ),
           ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              RecentConversationListSectionView(
-                onTap: (index) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ConversationPage(
-                              receiverId: "",
-                              receiverName: "",
-                            )),
-                  );
-                },
-              ),
-              // const DividerView(),
-              // const SubscriptionsSectionView(),
-              // const DividerView(),
-              // RecentConversationListSectionView(
-              //   onTap: (index) {},
-              // )
-            ],
-          ),
         ),
       ),
     );
@@ -225,9 +228,7 @@ class SubscriptionItem extends StatelessWidget {
 }
 
 class RecentConversationListSectionView extends StatelessWidget {
-  final Function(int?) onTap;
-  const RecentConversationListSectionView({Key? key, required this.onTap})
-      : super(key: key);
+  const RecentConversationListSectionView({Key? key}) : super(key: key);
 
   void doNothing(BuildContext context) {}
   @override
@@ -241,16 +242,19 @@ class RecentConversationListSectionView extends StatelessWidget {
             endActionPane: ActionPane(
               motion: const ScrollMotion(),
               children: [
+                // SlidableAction(
+                //   // An action can be bigger than the others.
+                //   flex: 3,
+                //   onPressed: doNothing,
+                //   backgroundColor: ME_BACKGROUND_COLOR,
+                //   foregroundColor: MILD_BLUE,
+                //   icon: Icons.check_circle,
+                // ),
                 SlidableAction(
-                  // An action can be bigger than the others.
-                  flex: 3,
-                  onPressed: doNothing,
-                  backgroundColor: ME_BACKGROUND_COLOR,
-                  foregroundColor: MILD_BLUE,
-                  icon: Icons.check_circle,
-                ),
-                SlidableAction(
-                  onPressed: doNothing,
+                  onPressed: (context) {
+                    bloc.onTapDeleteConversation(
+                        bloc.result[index].chatContact?.qrCode ?? "");
+                  },
                   backgroundColor: ME_BACKGROUND_COLOR,
                   foregroundColor: VIVID_RED,
                   icon: Icons.cancel,
@@ -258,10 +262,17 @@ class RecentConversationListSectionView extends StatelessWidget {
               ],
             ),
             child: WechatSectionView(
-              message: bloc.msgList[index],
-              userVO: bloc.chatUser[index],
+              result: bloc.result[index],
               onTap: () {
-                onTap(index);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ConversationPage(
+                      receiverId: bloc.result[index].chatContact?.qrCode,
+                      receiverName: bloc.result[index].chatContact?.name,
+                    ),
+                  ),
+                );
               },
             ),
           );
@@ -271,17 +282,17 @@ class RecentConversationListSectionView extends StatelessWidget {
             height: 1,
           );
         },
-        itemCount: bloc.chatUser.length,
+        itemCount: bloc.result.length,
       ),
     );
   }
 }
 
 class WechatSectionView extends StatelessWidget {
-  final UserVO? userVO;
-  final List<MessageVO>? message;
+  final ChatHistoryVO result;
   final Function onTap;
-  const WechatSectionView({Key? key, required this.onTap,required this.userVO,required this.message}) : super(key: key);
+  const WechatSectionView({Key? key, required this.onTap, required this.result})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -306,15 +317,13 @@ class WechatSectionView extends StatelessWidget {
               ),
             ),
             ProfileImageView(
-              profile:
-                  userVO?.profile ?? "",
+              profile: result.chatContact?.profile ?? "",
             ),
             const SizedBox(
               width: MARGIN_MEDIUM,
             ),
             WechatItem(
-              contact: userVO,
-              message: message,
+              history: result,
             ),
           ],
         ),
@@ -324,13 +333,8 @@ class WechatSectionView extends StatelessWidget {
 }
 
 class WechatItem extends StatelessWidget {
-  final UserVO? contact;
-  final List<MessageVO>? message;
-  const WechatItem({
-    Key? key,
-    required this.contact,
-    required this.message
-  }) : super(key: key);
+  final ChatHistoryVO history;
+  const WechatItem({Key? key, required this.history}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -342,7 +346,7 @@ class WechatItem extends StatelessWidget {
           Row(
             children: [
               Text(
-                contact?.name ?? "",
+                history.chatContact?.name ?? "",
                 style: GoogleFonts.poppins(
                   textStyle: const TextStyle(
                     color: TEXT_COLOR_BOLD,
@@ -367,7 +371,7 @@ class WechatItem extends StatelessWidget {
             height: MARGIN_SMALL,
           ),
           Text(
-            message?.last.message ?? "",
+            history.lastMessage ?? "",
             style: GoogleFonts.poppins(
               textStyle: const TextStyle(
                 color: SUBTEXT_COLOR,

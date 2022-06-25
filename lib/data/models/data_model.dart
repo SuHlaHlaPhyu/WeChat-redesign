@@ -19,6 +19,7 @@ abstract class DataModel {
   Stream<UserVO> getLoggedInUser();
   UserVO getLogInUser();
   Future<void> logOut();
+  Future<UserVO> getUserByID(String? qr);
 
   /// contact
   Future<void> addToContact(String qrCode);
@@ -27,4 +28,7 @@ abstract class DataModel {
   /// conversation
   Future<void> sendMessage(MessageVO message,String receiverId,File? sentFile);
   Stream<List<MessageVO>> getConversationsList(String userId);
+  Stream<String> getConversationsLastMessage(String userId);
+  Stream<List<String>> chatHistory();
+  Future<void> deleteConversation(String contactId);
 }

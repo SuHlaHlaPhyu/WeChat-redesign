@@ -1,32 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:wechat_redesign/data/models/data_model.dart';
 import 'package:wechat_redesign/data/models/data_model_impl.dart';
-import 'package:wechat_redesign/data/vos/message_vo.dart';
+import 'package:wechat_redesign/data/vos/chat_history_vo.dart';
 import 'package:wechat_redesign/data/vos/user_vo.dart';
-import 'package:wechat_redesign/network/data_agent.dart';
-import 'package:wechat_redesign/network/data_agent_impl.dart';
 
 class ChatHistoryBloc extends ChangeNotifier {
   DataModel dataModel = DataModelImpl();
-  DataAgent dataAgent = DataAgentImpl();
   List<String>? strList;
 
   List<UserVO> chatUser = [];
-  List<List<MessageVO>> msgList = [];
+  List<String> msgList = [];
+
+  List<ChatHistoryVO> result = [];
+
+  bool isLoading = false;
+  bool isDisposed = false;
 
   ChatHistoryBloc() {
-    dataAgent.chatHistory().listen((event) {
-      strList = event;
+    dataModel.chatHistory().listen((event) {
+      if(event[0] == "No Data"){
+        strList?.clear();
+        _notifySafely();
+      }else{
+        strList = event;
+        _notifySafely();
+      }
+      print("====>contact list  $strList");
       getChatHistory(strList);
       notifyListeners();
     });
   }
+
   Future<void> getChatHistory(List<String>? strList) async {
+    result.clear();
     strList?.forEach((contact) async {
-      chatUser.add(await dataAgent.getUserByID(contact));
-      notifyListeners();
-      msgList.add(await dataAgent.getConversationsList(contact).first);
+      result.add(ChatHistoryVO(
+          chatContact: await dataModel.getUserByID(contact),
+          lastMessage:
+              await dataModel.getConversationsLastMessage(contact).first));
       notifyListeners();
     });
+  }
+
+  void onTapDeleteConversation(String contactUserID) {
+    _showLoading();
+    dataModel.deleteConversation(contactUserID).whenComplete(() {
+      _hideLoading();
+      dataModel.chatHistory();
+      notifyListeners();
+    });
+    notifyListeners();
+  }
+
+  void _showLoading() {
+    isLoading = true;
+    _notifySafely();
+  }
+
+  void _hideLoading() {
+    isLoading = false;
+    _notifySafely();
+  }
+
+  void _notifySafely() {
+    if (!isDisposed) {
+      notifyListeners();
+    }
   }
 }

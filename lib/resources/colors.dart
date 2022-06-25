@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 const Color PRIMARY_COLOR = Color(0xFF1FE559);
+//const Color PRIMARY_COLOR = Color.fromRGBO(168, 219, 71, 1);
 const Color PRIMARY_GRADIENT_COLOR = Color.fromRGBO(140, 227, 99, 1);
 const Color MILD_BLUE = Color(0xFF3ED8DC);
 const Color VIVID_RED = Color(0xFFFF002B);

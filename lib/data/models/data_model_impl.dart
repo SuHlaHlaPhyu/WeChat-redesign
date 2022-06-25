@@ -166,4 +166,24 @@ class DataModelImpl extends DataModel {
   Stream<List<MessageVO>> getConversationsList(String userId) {
     return mDataAgent.getConversationsList(userId);
   }
+
+  @override
+  Future<UserVO> getUserByID(String? qr) {
+    return mDataAgent.getUserByID(qr);
+  }
+
+  @override
+  Stream<String> getConversationsLastMessage(String userId) {
+    return mDataAgent.getConversationsLastMessage(userId);
+  }
+
+  @override
+  Stream<List<String>> chatHistory() {
+    return mDataAgent.chatHistory();
+  }
+
+  @override
+  Future<void> deleteConversation(String contactId) {
+    return mDataAgent.deleteConversation(contactId);
+  }
 }

@@ -300,6 +300,7 @@ class TextFieldView extends StatelessWidget {
                       //
                       bloc.onPhoneChanged(text);
                     },
+                    keyboardType: TextInputType.phone,
                     style: const TextStyle(
                       color: Colors.white,
                     ),
