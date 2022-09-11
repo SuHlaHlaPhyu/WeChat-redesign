@@ -37,6 +37,10 @@ class FCMService {
   AndroidInitializationSettings initializationSettingsAndroid =
   const AndroidInitializationSettings('ic_launcher');
 
+  /// iOS Initialization Settings
+  IOSInitializationSettings initializationSettingsIOS =
+  const IOSInitializationSettings();
+
   void listenForMessages() async {
     await requestNotificationPermissionForIOS();
     await turnOnIOSForegroundNotification();
@@ -112,7 +116,7 @@ class FCMService {
     final InitializationSettings initializationSettings =
     InitializationSettings(
       android: initializationSettingsAndroid,
-      iOS: null,
+      iOS: initializationSettingsIOS,
       macOS: null,
     );
     return flutterLocalNotificationsPlugin.initialize(initializationSettings,

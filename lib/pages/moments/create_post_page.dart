@@ -493,11 +493,12 @@ class AddNewPostTextFieldView extends StatelessWidget {
         height: ADD_NEW_POST_TEXTFIELD_HEIGHT,
         // height: null,
         child: TextField(
-          maxLines: 24,
+          maxLines: null,
           controller: TextEditingController(text: bloc.newPostDescription),
           onChanged: (text) {
             bloc.onNewPostTextChanged(text);
           },
+          keyboardType: TextInputType.multiline,
           decoration: const InputDecoration(
             hintText: "What's on your mind?",
             border: InputBorder.none,

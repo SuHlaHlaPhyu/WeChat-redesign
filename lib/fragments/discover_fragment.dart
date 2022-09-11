@@ -14,7 +14,6 @@ import 'package:wechat_redesign/viewitems/moment_overlay.dart';
 
 import '../viewitems/user_profile_and_name_section_view.dart';
 
-
 class DiscoverFragment extends StatefulWidget {
   const DiscoverFragment({Key? key}) : super(key: key);
   @override
@@ -54,7 +53,7 @@ class _DiscoverFragmentState extends State<DiscoverFragment> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const  Padding(
+                        const Padding(
                           padding: EdgeInsets.only(
                             left: 10.0,
                           ),
@@ -66,7 +65,8 @@ class _DiscoverFragmentState extends State<DiscoverFragment> {
                         ),
                         Text(
                           "Discover",
-                          style: GoogleFonts.poppins(textStyle:const  TextStyle(
+                          style: GoogleFonts.poppins(
+                              textStyle: const TextStyle(
                             color: Color.fromRGBO(171, 239, 183, 1),
                             fontSize: TEXT_REGULAR_2XX,
                           )),
@@ -76,7 +76,8 @@ class _DiscoverFragmentState extends State<DiscoverFragment> {
                     const Spacer(),
                     Text(
                       "Moments",
-                      style: GoogleFonts.poppins(textStyle:const  TextStyle(
+                      style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
                         fontWeight: FontWeight.w600,
                         color: APP_TITLE_COLOR,
                         fontSize: TEXT_REGULAR_2XX,
@@ -344,14 +345,13 @@ class MomentItem extends StatelessWidget {
                 const LikeCommentByOtherSectionView(),
               ],
             ),
-           Positioned(
+            Positioned(
               top: 17.0,
               left: 30.0,
               child: Consumer<MomentsBloc>(
-                builder: (context, bloc, child)=>
-                 UserProfileAndNameSectionView(
-                  profile:
-                      moment?.profilePicture ?? "",
+                builder: (context, bloc, child) =>
+                    UserProfileAndNameSectionView(
+                  profile: moment?.profilePicture ?? "",
                   name: moment?.userName ?? "",
                 ),
               ),
@@ -732,8 +732,7 @@ class HeaderSectionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<MomentsBloc>(
-      builder: (context,bloc,child) =>
-       SizedBox(
+      builder: (context, bloc, child) => SizedBox(
         height: 290,
         child: Stack(
           children: [
@@ -742,11 +741,11 @@ class HeaderSectionView extends StatelessWidget {
                 CoverPhotoAndNameView(
                   name: bloc.loginUser?.name,
                 ),
-               const Divider(
+                const Divider(
                   height: 7.0,
                   thickness: 7.0,
                 ),
-               const AccountInfoView()
+                const AccountInfoView()
               ],
             ),
             Positioned(
@@ -799,10 +798,7 @@ class AccountInfoView extends StatelessWidget {
 
 class CoverPhotoAndNameView extends StatelessWidget {
   final String? name;
-  const CoverPhotoAndNameView({
-    Key? key,
-    required this.name
-  }) : super(key: key);
+  const CoverPhotoAndNameView({Key? key, required this.name}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -836,10 +832,7 @@ class CoverPhotoAndNameView extends StatelessWidget {
 
 class ProfileImageView extends StatelessWidget {
   final String? profile;
-  const ProfileImageView({
-    Key? key,
-    required this.profile
-  }) : super(key: key);
+  const ProfileImageView({Key? key, required this.profile}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
